@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recall - My Study Decks</title>
+</head>
+<body>
+
+<a href="#main-content">Skip to main content</a>
+
+    <header>
+        <h1>Recall</h1>
+        <p>Spaced-Repetition Study Studio</p>
+<nav>
+    <a href="#decks">Decks</a>
+    <a href="#stats">Statistics</a>
+    <a href="#settings">Settings</a>
+</nav>
+</header>
+<main id="main-content">
+
+<p id="status-message" aria-live="polite"></p>
+
+<section id="decks">
+        <h2>Your Study Decks</h2>
+
+<div>
+    <label for="deck-search">Search Decks:</label>
+    <input
+        type="search"
+        id="deck-search"
+        name="deck-search"
+        placeholder="Search by deck name..."
+    >
+
+    <label for="deck-sort">Sort Decks:</label>
+    <select id="deck-sort" name="deck-sort">
+        <option value="default">Default Order</option>
+        <option value="az">Name: A to Z</option>
+        <option value="za">Name: Z to A</option>
+    </select>
+</div>
+
+
+<article>
+    <h3>JavaScript</h3>
+    <p>Learn JavaScript concepts and practice questions.</p>
+    <p>Flashcards: 0</p>
+    <a href="deck.html">Open Deck</a>
+</article>
+
+<article>
+    <h3>Python</h3>
+    <p>Learn Python concepts and practice questions.</p>
+    <p>Flashcards: 0</p>
+    <a href="deck.html">Open Deck</a>
+</article>
+
+<article>
+    <h3>Algorithms</h3>
+    <p>Practice algorithms and problem-solving concepts.</p>
+    <p>Flashcards: 0</p>
+    <a href="deck.html">Open Deck</a>
+</article>
+
+<article>
+    <h3>Create a New Deck</h3>
+
+    <form>
+        <fieldset>
+            <legend>Deck Details</legend>
+
+            <label for="deck-name">Deck Name:</label>
+            <input
+                type="text"
+                id="deck-name"
+                name="deck-name"
+                required
+                minlength="2"
+                maxlength="40"
+            >
+
+            <label for="deck-description">Description:</label>
+            <textarea
+                id="deck-description"
+                name="deck-description"
+                rows="3"
+                maxlength="200"
+            ></textarea>
+
+            <button type="submit">Create Deck</button>
+            <button type="reset">Clear</button>
+        </fieldset>
+    </form>
+</article>
+
+    </section>
+
+<section id="stats">
+    <h2>Your Study Statistics</h2>
+
+    <article>
+        <h3>Total Decks</h3>
+        <p id="total-decks">3</p>
+    </article>
+
+    <article>
+        <h3>Total Flashcards</h3>
+        <p id="total-flashcards">0</p>
+    </article>
+
+    <article>
+        <h3>Cards Studied Today</h3>
+        <p id="cards-studied">0</p>
+    </article>
+
+    <article>
+        <h3>Overall Progress</h3>
+        <progress id="study-progress" value="0" max="100">0%</progress>
+        <p>0% completed</p>
+
+<output id="progress-result">0% completed</output>
+
+    </article>
+</section>
+
+<section id="study-help">
+    <h2>How Recall Works</h2>
+
+    <details>
+        <summary>What is spaced repetition?</summary>
+        <p>
+            Spaced repetition is a learning method in which
+            you review information at increasing time intervals
+            to remember it for longer.
+        </p>
+    </details>
+
+    <details>
+        <summary>What are flashcards?</summary>
+        <p>
+            Flashcards contain a question on one side and
+            its answer on the other side.
+        </p>
+    </details>
+</section>
+
+
+<section id="settings">
+    <h2>Study Settings</h2>
+
+    <form>
+        <fieldset>
+            <legend>Study Preferences</legend>
+
+            <label for="daily-goal">Daily Flashcard Goal:</label>
+            <input
+                type="number"
+                id="daily-goal"
+                name="daily-goal"
+                min="1"
+                max="500"
+                value="20"
+                required
+            >
+
+            <label for="study-time">Preferred Study Time:</label>
+            <input
+                type="time"
+                id="study-time"
+                name="study-time"
+            >
+
+            <button type="submit">Save Settings</button>
+            <button type="reset">Reset</button>
+        </fieldset>
+    </form>
+</section>
+
+</main>
+
+<dialog id="confirm-dialog">
+    <h2>Confirm Action</h2>
+
+    <p>Are you sure you want to delete this deck?</p>
+
+    <button type="button">Cancel</button>
+    <button type="button">Delete</button>
+</dialog>
+
+<template id="deck-template">
+    <article class="deck-card">
+        <h3 class="deck-title">Deck Name</h3>
+
+        <p class="deck-description">
+            Deck description goes here.
+        </p>
+
+        <p>
+            Flashcards: <span class="flashcard-count">0</span>
+        </p>
+
+        <button type="button">Open Deck</button>
+    </article>
+</template>
+
+</body>
