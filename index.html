@@ -55,6 +55,34 @@
         <fieldset>
             <legend>Add a New Flashcard</legend>
             <div>
+                <label for="flashcard-topic">Topic:</label>
+                <input 
+                type="text"
+                id="flashcard-topic"
+                name="topic"
+                list="topic-suggestions"
+                placeholder="choose a topic"
+                maxlength="100"
+                required
+                >
+                <datalist id="topic-suggestions">
+                    <option value="JavaScript"></option>
+                    <option value="Python"></option>
+                    <option value="Algorithms"></option>
+                </datalist>
+            </div>
+            <div>
+
+    <label for="flashcard-file">Attach a file:</label>
+    <input
+        type="file"
+        id="flashcard-file"
+        name="attachment"
+        accept=".pdf,image/*"
+    >
+</div>
+
+            <div>
             <label for="flashcard-question">Question:</label>
             <input type="text" 
             id="flashcard-question" 
@@ -80,6 +108,49 @@
         <button type="reset">- Clear</button>
     </form>
     </section>
+    <section id="settings">
+        <h2>Study Settings</h2>
+        <label for="daily-goal">Daily Study Goal:</label>
+        <input
+            type="range"
+            id="daily-goal"
+            name="daily-goal"
+            min="5"
+            max="100"
+            value="10"
+        >
+            <output id="daily-goal-value">10</output>
+
+</section>
+<section id="stats">
+    <h2>Your Study Statistics</h2>
+    <p>Track learning progress and performance over time.</p>
+    <article>
+    <h3>Total Flashcards</h3>
+    <p>0</p>
+    </article>
+      <article>
+        <h3>Cards Reviewed</h3>
+        <p>0</p>
+    </article>
+
+    <article>
+        <h3>Cards Mastered</h3>
+        <p>0</p>
+    </article>
+      <article>
+        <h3>Current Streak</h3>
+        <p>0 days</p>
+    </article>
+</section>
+<aside>
+    <h2>Study Tip!</h2>
+    <p>Review your flashcards regularly to remember concepts for longer.</p>
+</aside>
     </main>
+<footer>
+    <p>Learn a little every day, remember for longer.</p>
+    <p>&copy; 2026 Recall - My Study Decks</p>
+</footer>   
     </body>
     </html>
