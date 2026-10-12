@@ -10,6 +10,7 @@
     <header>
         <h1>Recall</h1>
         <p>Spaced-Repetition Study Studio</p>
+        <button type="button" id="open-help">Help</button>
     <nav aria-label="Main navigation">
         <a href="#/decks">Decks</a>
         <a href="#/stats">Statistics</a>
@@ -64,12 +65,13 @@
         <button type="submit">+ Create Deck</button>
         <button type="reset">- Clear</button>
         </form>
-    
+    <div class="deck-list">
     <article>
-        <div class="deck-list">
         <h3>JavaScript</h3>
         <p>Learn JavaScript concepts and practice questions.</p>
-        <p>Flashcards: 0</p>
+        
+<p>Flashcards: <span id="count-javascript">0</span></p>
+
         <a href="#/deck/javascript">Open Deck</a>
 
 <button type="button" class="edit-deck">
@@ -84,7 +86,7 @@
     <article>
         <h3>Python</h3>
         <p>Learn Python concepts and practice questions.</p>
-        <p>Flashcards: 0</p>
+        <p>Flashcards: <span id="count-python"></span>0</span></p>
         <a href="#/deck/python">Open Deck</a>
 
 <button type="button" class="edit-deck">
@@ -99,7 +101,10 @@
     <article>
          <h3>Algorithms</h3>
     <p>Practice algorithms and problem-solving concepts.</p>
-    <p>Flashcards: 0</p>
+
+<p>Flashcards: <span id="count-algorithms">0</span></p>
+
+
     <a href="#/deck/algorithms">Open Deck</a>
 
 <button type="button" class="edit-deck">
@@ -132,6 +137,14 @@
      </section>
      <section id="study-session">
         <h3>Study Session</h3>
+        <progress
+    id="session-progress"
+    value="0"
+    max="10">
+</progress>
+<p id="session-progress-text" aria-live="polite">
+    0 out of 10 cards reviewed
+</p>
         <p id="study-question">what is closure in javascript</p>
         <details>
             <summary>Show Answer</summary>
@@ -149,6 +162,15 @@
     Undo Last Action
 </button>
 
+<p>
+    Keyboard shortcuts:
+    <kbd>Space</kbd> to reveal the answer,
+    <kbd>1</kbd> to mark as known,
+    <kbd>2</kbd> to review again,
+    <kbd>Z</kbd> to undo.
+</p>
+
+
 <p id="undo-message" aria-live="polite"></p>
 
      <form id="flashcard-form" autocomplete="off">
@@ -164,7 +186,6 @@
                 placeholder="choose a topic"
                 minlength="2"
                 maxlength="100"
-                pattern="[A-Za-z ]+"
                 required
                 >
                 <datalist id="topic-suggestions">
@@ -196,7 +217,36 @@
 
             required
         >
-            </div>
+        </div>
+
+        <div>
+    <label for="flashcard-hint">Hint:</label>
+    <input
+        type="text"
+        id="flashcard-hint"
+        name="hint"
+        placeholder="Enter a small clue"
+    >
+</div>
+        
+<div>
+    <label for="flashcard-tags">Tags:</label>
+    <input
+        type="text"
+        id="flashcard-tags"
+        name="tags"
+        placeholder="e.g. functions, closures"
+    >
+</div>
+<div>
+    <label for="flashcard-created-date">Created Date:</label>
+    <input
+        type="date"
+        id="flashcard-created-date"
+        name="created-date"
+    >
+</div>
+
             <div>
         <label for="flashcard-answer">Answer:</label>
     <textarea
@@ -247,6 +297,31 @@
     <p>3 out of 10 cards reviewed</p>
 
 </div>
+</section>
+<section id="import-export">
+    <h2>Import &amp; Export</h2>
+
+    <form id="import-form">
+        <label for="import-file">Import flashcards:</label>
+        <input
+            type="file"
+            id="import-file"
+            accept=".json,.csv"
+            required
+        >
+        <button type="submit">Import File</button>
+    </form>
+
+    <button type="button" id="export-json">
+        Export as JSON
+    </button>
+
+    <button type="button" id="export-csv">
+        Export as CSV
+    </button>
+
+    <p id="import-export-status" aria-live="polite"></p>
+
 </section>
 <section id="stats">
     <h2>Your Study Statistics</h2>
