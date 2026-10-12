@@ -10,10 +10,10 @@
     <header>
         <h1>Recall</h1>
         <p>Spaced-Repetition Study Studio</p>
-    <nav>
-    <a href="#/decks">Decks</a>
-    <a href="#/stats">Statistics</a>
-    <a href="#/settings">Settings</a>
+    <nav aria-label="Main navigation">
+        <a href="#/decks">Decks</a>
+        <a href="#/stats">Statistics</a>
+        <a href="#/settings">Settings</a>
     </nav>
 </header>
 <main id="main-content">
@@ -21,25 +21,102 @@
     <section id="decks">
         <h2>Your Study Decks</h2>
         <p>Pick a deck to study!!</p>
+        <label for="deck-search">Search Decks:</label>
+        <input
+            type="search"
+            id="deck-search"
+            name="deck-search"
+            placeholder="Search by deck name..."
+            >
+        <label for="deck-sort">Sort Decks:</label>
+        <select id="deck-sort" name="deck-sort">
+            <option value="default">Default Order</option>
+            <option value="az">Name: A to Z</option>
+            <option value="za">Name: Z to A</option>
+        </select>
+    <form id="create-deck-form" autocomplete="off">
+        <fieldset>
+            <legend>Create a New Deck</legend>
+            <div>
+                <label for="deck-name">Deck Name:</label>
+                <input
+                    type="text"
+                    id="deck-name"
+                    name="deck-name"
+                    placeholder="Enter deck name"
+                    minlength="2"
+                    maxlength="100"
+                    required
+                >
+            </div>
+            <div>
+                <label for="deck-description">Deck Description:</label>
+                <textarea
+                    id="deck-description"
+                    name="deck-description"
+                    placeholder="Enter deck description"
+                    rows="3"
+                    minlength="5"
+                    maxlength="300"
+                ></textarea>
+            </div>
+        </fieldset>
+        <button type="submit">+ Create Deck</button>
+        <button type="reset">- Clear</button>
+        </form>
     
     <article>
+        <div class="deck-list">
         <h3>JavaScript</h3>
         <p>Learn JavaScript concepts and practice questions.</p>
         <p>Flashcards: 0</p>
         <a href="#/deck/javascript">Open Deck</a>
+
+<button type="button" class="edit-deck">
+    Edit Deck
+</button>
+
+<button type="button" class="delete-deck">
+    Delete Deck
+</button>
+
     </article>
     <article>
         <h3>Python</h3>
         <p>Learn Python concepts and practice questions.</p>
         <p>Flashcards: 0</p>
         <a href="#/deck/python">Open Deck</a>
+
+<button type="button" class="edit-deck">
+    Edit Deck
+</button>
+
+<button type="button" class="delete-deck">
+    Delete Deck
+</button>
+
     </article>
     <article>
          <h3>Algorithms</h3>
     <p>Practice algorithms and problem-solving concepts.</p>
     <p>Flashcards: 0</p>
     <a href="#/deck/algorithms">Open Deck</a>
+
+<button type="button" class="edit-deck">
+    Edit Deck
+</button>
+
+<button type="button" class="delete-deck">
+    Delete Deck
+</button>
+
 </article>
+</div>
+
+<p id="no-decks-message" hidden>
+    No decks found. Try a different search.
+</p>
+
 </section>
 <section id="deck-detail">
     <h2>JavaScript</h2>
@@ -49,10 +126,31 @@
         <article>
             <details>
                 <summary>What is a closure in JavaScript?</summary>
-                <p>A closure is a function that has access to its own scope, the outer function's scope, and the global scope, even after the outer function has returned.</p>
+                <p> closure lets a function access variables from its outer scope.</p>
             </details> 
             </article>
      </section>
+     <section id="study-session">
+        <h3>Study Session</h3>
+        <p id="study-question">what is closure in javascript</p>
+        <details>
+            <summary>Show Answer</summary>
+            <p id="study-answer"> closure lets a function access variables from its outer scope..</p>    
+            </details>
+             <button type="button" id="know-answer">
+        I Know This
+    </button>
+
+    <button type="button" id="review-answer">
+        Review Again
+    </button>
+     </section>
+     <button type="button" id="undo-action" disabled>
+    Undo Last Action
+</button>
+
+<p id="undo-message" aria-live="polite"></p>
+
      <form id="flashcard-form" autocomplete="off">
         <fieldset>
             <legend>Add a New Flashcard</legend>
@@ -112,6 +210,9 @@
     </textarea>
     </div>
         </fieldset>
+
+<output id="flashcard-message" aria-live="polite"></output>
+
         <button type="submit">+ Add Flashcard</button>
         <button type="reset">- Clear</button>
     </form>
