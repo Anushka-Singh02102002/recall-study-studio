@@ -24,21 +24,62 @@
         <h3>JavaScript</h3>
         <p>Learn JavaScript concepts and practice questions.</p>
         <p>Flashcards: 0</p>
-        <a href="deck.html">Open Deck</a>
+        <a href="#/deck/javascript">Open Deck</a>
     </article>
     <article>
         <h3>Python</h3>
         <p>Learn Python concepts and practice questions.</p>
         <p>Flashcards: 0</p>
-        <a href="deck.html">Open Deck</a>
+        <a href="#/deck/python">Open Deck</a>
     </article>
     <article>
          <h3>Algorithms</h3>
     <p>Practice algorithms and problem-solving concepts.</p>
     <p>Flashcards: 0</p>
-    <a href="deck.html">Open Deck</a>
+    <a href="#/deck/algorithms">Open Deck</a>
 </article>
 </section>
-</main>
-</body>
-</html>
+<section id="deck-detail">
+    <h2>JavaScript</h2>
+    <p>Learn JavaScript concepts and practice questions.</p>
+    <section>
+        <h3>FlashCards</h3>
+        <article>
+            <details>
+                <summary>What is a closure in JavaScript?</summary>
+                <p>A closure is a function that has access to its own scope, the outer function's scope, and the global scope, even after the outer function has returned.</p>
+            </details> 
+            </article>
+     </section>
+     <form id="flashcard-form">
+        <fieldset>
+            <legend>Add a New Flashcard</legend>
+            <div>
+            <label for="flashcard-question">Question:</label>
+            <input type="text" 
+            id="flashcard-question" 
+            name="question" 
+            placeholder="Enter your question"
+            maxlength="400"
+            required
+        >
+            </div>
+            <div>
+        <label for="flashcard-answer">Answer:</label>
+    <textarea
+        id="flashcard-answer"
+        name="answer"
+        placeholder="Enter your answer"
+        rows="5"
+        maxlength="1000"
+        required>
+    </textarea>
+    </div>
+        </fieldset>
+        <button type="submit">+ Add Flashcard</button>
+        <button type="reset">- Clear</button>
+    </form>
+    </section>
+    </main>
+    </body>
+    </html>
