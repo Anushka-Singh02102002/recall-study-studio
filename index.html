@@ -86,7 +86,7 @@
     <article>
         <h3>Python</h3>
         <p>Learn Python concepts and practice questions.</p>
-        <p>Flashcards: <span id="count-python"></span>0</span></p>
+        <p>Flashcards: <span id="count-python">0</span></p>
         <a href="#/deck/python">Open Deck</a>
 
 <button type="button" class="edit-deck">
@@ -129,6 +129,7 @@
     <section>
         <h3>FlashCards</h3>
         <article>
+            <h4> Flashcards Questions</h4>
             <details>
                 <summary>What is a closure in JavaScript?</summary>
                 <p> closure lets a function access variables from its outer scope.</p>
@@ -137,6 +138,12 @@
      </section>
      <section id="study-session">
         <h3>Study Session</h3>
+
+<p>
+    Time elapsed:
+    <time id="session-timer">00:00</time>
+</p>
+
         <progress
     id="session-progress"
     value="0"
@@ -259,6 +266,27 @@
         required>
     </textarea>
     </div>
+
+<div>
+    <label for="flashcard-next-review">Next Review Date:</label>
+    <input
+        type="date"
+        id="flashcard-next-review"
+        name="next-review"
+    >
+</div>
+
+<div>
+    <label for="flashcard-review-count">Review Count:</label>
+    <input
+        type="number"
+        id="flashcard-review-count"
+        name="review-count"
+        min="0"
+        value="0"
+    >
+</div>
+
         </fieldset>
 
 <output id="flashcard-message" aria-live="polite"></output>
