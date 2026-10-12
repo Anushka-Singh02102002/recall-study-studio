@@ -6,6 +6,7 @@
     <title>Recall - My Study Decks</title>
 </head>
 <body>
+    <a href="#main-content">Skip to main content</a>
     <header>
         <h1>Recall</h1>
         <p>Spaced-Repetition Study Studio</p>
@@ -15,7 +16,8 @@
     <a href="#/settings">Settings</a>
     </nav>
 </header>
-<main>
+<main id="main-content">
+<p id="status-message" aria-live="polite"></p>
     <section id="decks">
         <h2>Your Study Decks</h2>
         <p>Pick a deck to study!!</p>
@@ -51,7 +53,7 @@
             </details> 
             </article>
      </section>
-     <form id="flashcard-form">
+     <form id="flashcard-form" autocomplete="off">
         <fieldset>
             <legend>Add a New Flashcard</legend>
             <div>
@@ -62,7 +64,9 @@
                 name="topic"
                 list="topic-suggestions"
                 placeholder="choose a topic"
+                minlength="2"
                 maxlength="100"
+                pattern="[A-Za-z ]+"
                 required
                 >
                 <datalist id="topic-suggestions">
@@ -88,7 +92,10 @@
             id="flashcard-question" 
             name="question" 
             placeholder="Enter your question"
+            minlength="3"
             maxlength="400"
+            autocomplete="off"
+
             required
         >
             </div>
@@ -99,6 +106,7 @@
         name="answer"
         placeholder="Enter your answer"
         rows="5"
+        minlength="5"
         maxlength="1000"
         required>
     </textarea>
@@ -119,8 +127,25 @@
             max="100"
             value="10"
         >
-            <output id="daily-goal-value">10</output>
+           <output id="daily-goal-value" for="daily-goal">10</output>
+        <div>
+            <label for="study-reminder">Study Reminder Time:</label>
+            <input
+                type="time"
+                id="study-reminder"
+                name="study-reminder"
+        >
+        </div>
+<div>
+    <label for="study-progress">Today's Study Progress:</label>
+    <progress 
+     id="study-progress"
+     value="3" 
+     max="10">
+    </progress>
+    <p>3 out of 10 cards reviewed</p>
 
+</div>
 </section>
 <section id="stats">
     <h2>Your Study Statistics</h2>
@@ -142,12 +167,58 @@
         <h3>Current Streak</h3>
         <p>0 days</p>
     </article>
+    <article>
+        <h3>Study Accuracy</h3>
+        <meter
+            id="study-accuracy"
+            min="0"
+            max="100"
+            low="40"
+            high="80"
+            value="75"
+            optimum="100"
+            ></meter>
+            <p>current accuracy: 75%</p>
+
+        </article>
+        
+<figure>
+    <div role="img" aria-label="Study progress: 3 out of 10 flashcards reviewed">
+        3 / 10 cards reviewed
+    </div>
+    <figcaption>Today's study progress</figcaption>
+</figure>
+
 </section>
 <aside>
     <h2>Study Tip!</h2>
     <p>Review your flashcards regularly to remember concepts for longer.</p>
+    
+<p>
+    Tip: Press <kbd>Ctrl</kbd> + <kbd>F</kbd>
+    to find text on the page.
+</p>
+
 </aside>
+<dialog id="help-dialog" >
+    <h2>Study Help</h2>
+    <p>Need help getting started? Choose a deck, review your flashcards, and track your learning progress every day.</p>
+    <form method="dialog">
+        <button type="submit">Close</button>
+    </form>
+</dialog>
     </main>
+    
+<template id="flashcard-template">
+    <article class="flashcard">
+        <h3 class="flashcard-question"></h3>
+        <details>
+            <summary>Show Answer</summary>
+            <p class="flashcard-answer"></p>
+        </details>
+    </article>
+</template>
+
 <footer>
     <p>Learn a little every day, remember for longer.</p>
     <p>&copy; 2026 Recall - My Study Decks</p>
