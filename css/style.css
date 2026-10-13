@@ -19,6 +19,15 @@ body {
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
         }
+        main{
+            padding: 25px;
+        }
+        main section{
+            margin-bottom: 40px;
+        }
+        h1,h2,h3{
+            line-height:1.4;
+        }
              
     }
     @layer components {
@@ -27,17 +36,16 @@ body {
                 background-color: var(--card-background);
                 border-radius: 20px;
                box-shadow: 0 10px 25px rgba(38, 50, 56, 0.30);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+
 
             }
-        .deck-list article{
-                    transition: transform 0.3s ease, box-shadow 0.3s ease;
 
-        }
         .deck-list article:hover{
                     transform: translateY(-5px);
                     box-shadow: 0 15px 30px rgba(38, 50, 56, 0.35);
         }
-    }
+    
         button{
             
             background-color: var(--primary-color);
@@ -49,12 +57,251 @@ body {
             transition: background-color 0.3s ease;
             
         }
-         button:hover{
+        button:hover{
             background-color: #3CB371;
     }
-    button:focus-visible{
-        outline: 3px solid #263238;
-    outline-offset: 3px;
+    header{
+      padding: 20px;
+    }
+    header nav{
+        display:flex;
+        flex-wrap:wrap;
+        gap: 17px;
+        align-items:center;
+    }
+
+    header nav a{
+        text-decoration:none;
+        color: var(--text-color);
+        font-weight:bold;
+        padding: 8px 12px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+    }
+    header nav a:hover {
+    background-color: #269637;
 }
 
+header nav a:focus-visible {
+    outline: 3px solid var(--text-color);
+    outline-offset: 3px;
+}
+    button:focus-visible{
+        outline: 3px solid #18506c;
+    outline-offset: 3px;
+}
+input,
+select,
+textarea {
+    font: inherit;
+    padding: 10px 12px;
+    border: 1px solid #C5D8CC;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: var(--text-color);
+    max-width: 100%;
+}
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 2px;
+}
+.form-row {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 420px);
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.form-row label {
+    padding-top: 0;
+}
+
+.form-row input:not([type="file"]),
+.form-row select,
+.form-row textarea {
+    width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+.form-row textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+.form-row:has(#flashcard-answer) label {
+    align-self: start;
+    padding-top: 0;
+}
+
+.form-row:has(#flashcard-answer) textarea {
+    min-height: 120px;
+}
+#flashcard-form fieldset {
+    border: 1px solid #C5D8CC;
+    border-radius: 12px;
+    padding: 24px;
+    background-color: var(--card-background);
+}
+
+#flashcard-form legend {
+    padding: 0 10px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+#settings {
+    padding: 24px;
+    margin-top: 24px;
+    background-color: var(--card-background);
+    border: 1px solid #C5D8CC;
+    border-radius: 12px;
+}
+
+#settings h2 {
+    margin-top: 0;
+    margin-bottom: 24px;
+}
+
+#settings > label,
+#settings > input,
+#settings > output {
+    vertical-align: middle;
+}
+
+#settings input[type="range"] {
+    accent-color: var(--primary-color);
+    cursor: pointer;
+}
+
+#settings input[type="time"] {
+    width: auto;
+    max-width: 100%;
+}
+
+#settings progress {
+    width: 100%;
+    max-width: 320px;
+    accent-color: var(--primary-color);
+}
+
+#settings > label,
+#settings > input,
+#settings > output {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#settings input[type="range"] {
+    width: 220px;
+    max-width: 100%;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+}
+
+#settings input[type="time"] {
+    width: 150px;
+    max-width: 100%;
+}
+
+#settings progress {
+    display: block;
+    width: 100%;
+    max-width: 320px;
+    height: 12px;
+    margin-top: 10px;
+    accent-color: var(--primary-color);
+}
+
+#settings > label[for="daily-goal"] {
+    display: block;
+    margin-bottom: 12px;
+}
+
+#settings > input[type="range"] {
+    vertical-align: middle;
+}
+
+#settings > output {
+    display: inline-block;
+    min-width: 32px;
+    margin-left: 12px;
+    font-weight: 600;
+}
+
+#settings > div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+#settings > div label {
+    font-weight: 500;
+}
+
+#settings > div input[type="time"] {
+    margin: 0;
+}
+
+#settings > div:has(#study-progress) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+#settings #study-progress {
+    width: 100%;
+    max-width: 320px;
+    height: 12px;
+}
+
+#settings > div:has(#study-progress) p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-color);
+}
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .deck-list article {
+        transition: none;
+    }
+
+    .deck-list article:hover {
+        transform: none;
+        box-shadow: 0 10px 25px rgba(22, 35, 42, 0.3);
+    }
+}
+
+@media (max-width: 600px) {
+    main {
+        padding: 16px;
+    }
+
+    #settings {
+        padding: 16px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
+    .form-row label {
+        padding-top: 0;
+    }
+
+    #settings input[type="range"] {
+        width: 100%;
+        max-width: 320px;
+    }
+}
+
+    
     
