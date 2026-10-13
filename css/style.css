@@ -1,4 +1,60 @@
+@layer base, layout, components, utilities;
+@layer base{
+:root {
+    --primary-color: #50C878;
+    --page-background: #F5F5DC;
+    --card-background: #FFFFFF;
+    --text-color: #263238;
+    
+}
 
 body {
-    background-color: #b2ac88
+    background-color: var(--page-background);
+    color: var(--text-color);
 }
+}
+@layer layout {
+        .deck-list{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+             
+    }
+    @layer components {
+        .deck-list article{
+                padding:20px;
+                background-color: var(--card-background);
+                border-radius: 20px;
+               box-shadow: 0 10px 25px rgba(38, 50, 56, 0.30);
+
+            }
+        .deck-list article{
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+        }
+        .deck-list article:hover{
+                    transform: translateY(-5px);
+                    box-shadow: 0 15px 30px rgba(38, 50, 56, 0.35);
+        }
+    }
+        button{
+            
+            background-color: var(--primary-color);
+            color: whitesmoke;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            
+        }
+         button:hover{
+            background-color: #3CB371;
+    }
+    button:focus-visible{
+        outline: 3px solid #263238;
+    outline-offset: 3px;
+}
+
+    
