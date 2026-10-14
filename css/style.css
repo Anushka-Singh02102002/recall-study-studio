@@ -95,7 +95,7 @@ select,
 textarea {
     font: inherit;
     padding: 10px 12px;
-    border: 1px solid #C5D8CC;
+    border: 1px solid #29dc4d;
     border-radius: 8px;
     background-color: #FFFFFF;
     color: var(--text-color);
@@ -155,7 +155,7 @@ textarea:focus-visible {
     padding: 24px;
     margin-top: 24px;
     background-color: var(--card-background);
-    border: 1px solid #C5D8CC;
+    border: 1px solid #288f4e;
     border-radius: 12px;
 }
 
@@ -214,12 +214,14 @@ textarea:focus-visible {
     accent-color: var(--primary-color);
 }
 
+
 #settings > label[for="daily-goal"] {
     display: block;
     margin-bottom: 12px;
 }
 
 #settings > input[type="range"] {
+    display: inline-block;
     vertical-align: middle;
 }
 
@@ -230,13 +232,6 @@ textarea:focus-visible {
     font-weight: 600;
 }
 
-#settings > div {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 12px;
-    margin-top: 20px;
-}
 
 #settings > div label {
     font-weight: 500;
@@ -265,6 +260,38 @@ textarea:focus-visible {
     font-size: 14px;
     color: var(--text-color);
 }
+
+#import-export {
+    padding: 24px;
+    margin-top: 24px;
+    background-color: var(--card-background);
+    border: 1px solid #1f683a;
+    border-radius: 12px;
+}
+
+#import-export h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+#import-export input[type="file"] {
+    display: block;
+    max-width: 100%;
+    margin-top: 12px;
+}
+
+#import-export button {
+    margin-top: 12px;
+}
+
+#import-export form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+
 
 }
 
