@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recall - My Study Decks</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <a href="#main-content">Skip to main content</a>
@@ -125,26 +126,30 @@
 
 </section>
 <section id="deck-detail">
+  
+<div class="deck-detail__header">
+    <span class="deck-detail__badge">JAVASCRIPT DECK</span>
     <h2>JavaScript</h2>
     <p>Learn JavaScript concepts and practice questions.</p>
+</div>
+
     <section>
-        <h3>FlashCards</h3>
-        <article>
-            <h4> Flashcards Questions</h4>
-            <details>
-                <summary>What is a closure in JavaScript?</summary>
-                <p> closure lets a function access variables from its outer scope.</p>
-            </details> 
+        
+<h3 class="flashcards-section__title">FlashCards</h3>
+
+<h4 class="flashcards-section__subtitle">Flashcards Questions</h4>
+
+<details class="flashcard-item">
+    <summary>What is a closure in JavaScript?</summary>
+    <p>Closure lets a function access variables from its outer scope..</p>
+</details>
+
             </article>
      </section>
-     <section id="study-session">
+     <section id="study-session" class="study-session">
         <h3>Study Session</h3>
 
-<p>
-    Time elapsed:
-    <time id="session-timer">00:00</time>
-</p>
-
+<p class="study-session__timer">Time elapsed: <time>00:00</time></p>
         <progress
     id="session-progress"
     value="0"
@@ -153,11 +158,22 @@
 <p id="session-progress-text" aria-live="polite">
     0 out of 10 cards reviewed
 </p>
-        <p id="study-question">what is closure in javascript</p>
-        <details>
-            <summary>Show Answer</summary>
-            <p id="study-answer"> closure lets a function access variables from its outer scope..</p>    
-            </details>
+        
+<div class="flashcard" id="study-flashcard">
+    <div class="flashcard-inner">
+        <div class="flashcard-front">
+            <h3>Question</h3>
+            <p id="study-question">What is a closure in JavaScript?</p>
+            <p class="flip-hint">Click the card to reveal the answer</p>
+        </div>
+
+        <div class="flashcard-back">
+            <h3>Answer</h3>
+            <p id="study-answer">A closure lets a function access variables from its outer scope.</p>
+        </div>
+    </div>
+</div>
+
              <button type="button" id="know-answer">
         I Know This
     </button>
@@ -165,18 +181,19 @@
     <button type="button" id="review-answer">
         Review Again
     </button>
-     </section>
-     <button type="button" id="undo-action" disabled>
+     
+<button type="button" id="undo-action" class="undo-button" disabled>
     Undo Last Action
 </button>
 
-<p>
-    Keyboard shortcuts:
-    <kbd>Space</kbd> to reveal the answer,
-    <kbd>1</kbd> to mark as known,
-    <kbd>2</kbd> to review again,
-    <kbd>Z</kbd> to undo.
+
+
+<p class="keyboard-shortcuts">
+    Keyboard shortcuts: Space to reveal the answer,
+    1 to mark as known, 2 to review again, Z to undo.
 </p>
+</section>
+
 
 
 <p id="undo-message" aria-live="polite"></p>
@@ -184,7 +201,7 @@
      <form id="flashcard-form" autocomplete="off">
         <fieldset>
             <legend>Add a New Flashcard</legend>
-            <div>
+            <div class="form-row">
                 <label for="flashcard-topic">Topic:</label>
                 <input 
                 type="text"
@@ -202,7 +219,8 @@
                     <option value="Algorithms"></option>
                 </datalist>
             </div>
-            <div>
+            <div class="form-row">
+
 
     <label for="flashcard-file">Attach a file:</label>
     <input
@@ -213,7 +231,8 @@
     >
 </div>
 
-            <div>
+            <div class="form-row">
+
             <label for="flashcard-question">Question:</label>
             <input type="text" 
             id="flashcard-question" 
@@ -227,7 +246,8 @@
         >
         </div>
 
-        <div>
+        <div class="form-row">
+
     <label for="flashcard-hint">Hint:</label>
     <input
         type="text"
@@ -237,7 +257,8 @@
     >
 </div>
         
-<div>
+<div class="form-row">
+
     <label for="flashcard-tags">Tags:</label>
     <input
         type="text"
@@ -246,7 +267,8 @@
         placeholder="e.g. functions, closures"
     >
 </div>
-<div>
+<div class="form-row">
+
     <label for="flashcard-created-date">Created Date:</label>
     <input
         type="date"
@@ -255,7 +277,8 @@
     >
 </div>
 
-            <div>
+            <div class="form-row">
+
         <label for="flashcard-answer">Answer:</label>
     <textarea
         id="flashcard-answer"
@@ -268,7 +291,8 @@
     </textarea>
     </div>
 
-<div>
+<div class="form-row">
+
     <label for="flashcard-next-review">Next Review Date:</label>
     <input
         type="date"
@@ -277,7 +301,8 @@
     >
 </div>
 
-<div>
+<div class="form-row">
+
     <label for="flashcard-review-count">Review Count:</label>
     <input
         type="number"
@@ -298,6 +323,15 @@
     </section>
     <section id="settings">
         <h2>Study Settings</h2>
+        <div class="setting-row">
+        <label for="accent-color">Choose accent color:</label>
+        <input
+            type="color"
+            id="accent-color"
+            name="accent-color"
+            value="#50c878"
+        >
+    </div>
         <label for="daily-goal">Daily Study Goal:</label>
         <input
             type="range"
@@ -393,6 +427,7 @@
     </div>
     <figcaption>Today's study progress</figcaption>
 </figure>
+
 <table>
     <caption>Daily Study Progress</caption>
     <thead>
@@ -412,16 +447,26 @@
     </table>
 
 </section>
-<aside>
-    <h2>Study Tip!</h2>
-    <p>Review your flashcards regularly to remember concepts for longer.</p>
-    
-<p>
-    Tip: Press <kbd>Ctrl</kbd> + <kbd>F</kbd>
-    to find text on the page.
-</p>
 
+<aside class="study-tip">
+    <div class="study-tip__heading">
+        <span class="study-tip__icon" aria-hidden="true">✦</span>
+        <div>
+            <p class="study-tip__label">DAILY LEARNING</p>
+            <h2>Study Tip</h2>
+        </div>
+    </div>
+
+    <p class="study-tip__message">
+        Review your flashcards regularly to remember concepts for longer.
+    </p>
+
+    <div class="study-tip__footer">
+        <span aria-hidden="true">⌨</span>
+        <p>Quick tip: Press <kbd>Ctrl</kbd> + <kbd>F</kbd> to find text on the page.</p>
+    </div>
 </aside>
+
 <dialog id="help-dialog" >
     <h2>Study Help</h2>
     <p>Need help getting started? Choose a deck, review your flashcards, and track your learning progress every day.</p>
@@ -429,26 +474,47 @@
         <button type="submit">Close</button>
     </form>
 </dialog>
-<section id="not-found">
-    <h2>404-Page Not Found</h2>
-    <p>Sorry,Page does not exist</p>
-    <a href="#/decks"> back to Decks</a>
-    </section>
+
+<section id="not-found" class="not-found">
+    <span class="not-found__icon" aria-hidden="true">⌕</span>
+    <p class="not-found__label">PAGE NOT FOUND</p>
+    <h2>Oops! Lost your way?</h2>
+    <p class="not-found__message">
+        Sorry, this page doesn't exist. Let's get you back to learning.
+    </p>
+    <a href="#/decks" class="not-found__link">← Back to Decks</a>
+</section>
+
     </main>
     
 <template id="flashcard-template">
-    <article class="flashcard">
-        <h3 class="flashcard-question"></h3>
-        <details>
-            <summary>Show Answer</summary>
+   
+<article class="flashcard">
+    <div class="flashcard-inner">
+        <div class="flashcard-front">
+            <h3 class="flashcard-question"></h3>
+            <p>Think of your answer first.</p>
+        </div>
+
+        <div class="flashcard-back">
+            <h3>Answer</h3>
             <p class="flashcard-answer"></p>
-        </details>
-    </article>
+        </div>
+    </div>
+</article>
+
 </template>
 
-<footer>
-    <p>Learn a little every day, remember for longer.</p>
-    <p>&copy; 2026 Recall - My Study Decks</p>
-</footer>   
+<footer class="site-footer">
+    <p class="site-footer__tagline">
+        Learn a little every day, remember for longer.
+    </p>
+    <p class="site-footer__copyright">
+        &copy; 2026 Recall - My Study Decks
+    </p>
+</footer>
+       
+<script type="module" src="./js/app.js"></script>
+  
     </body>
     </html>
