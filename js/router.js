@@ -7,6 +7,25 @@ const pageSections = document.querySelectorAll(
 function renderRoute() {
     const currentRoute = getCurrentRoute();
 
+const routeParts = currentRoute.split("/");
+const deckId = routeParts[2];
+const deckNames = {
+    javascript: "JavaScript",
+    python: "Python",
+    algorithms: "Algorithms"
+};
+const isValidDeck = Object.hasOwn(deckNames, deckId);
+const deckTitle = document.querySelector("#deck-detail h2");
+
+if (deckTitle && currentRoute.startsWith("#/deck/")) {
+    deckTitle.textContent = isValidDeck
+        ? deckNames[deckId]
+        : "Deck Not Found";
+}
+if (currentRoute.startsWith("#/deck/") && !isValidDeck) {
+    window.location.hash = "#/404";
+}
+
     pageSections.forEach(function (section) {
         section.hidden = true;
     });
@@ -14,10 +33,19 @@ function renderRoute() {
     "#/decks": "decks",
     "#/stats": "stats",
     "#/settings": "settings",
+    "#/deck": "deck-detail",
+    "#/study": "study-session",
     "#/404": "not-found"
 };
+let routeToShow = currentRoute;
 
-const sectionId = routeMap[currentRoute] || "not-found";
+if (currentRoute.startsWith("#/deck/")) {
+    routeToShow = "#/deck";
+} else if (currentRoute.startsWith("#/study/")) {
+    routeToShow = "#/study";
+}
+
+const sectionId = routeMap[routeToShow] || "not-found";
 const activeSection = document.getElementById(sectionId);
 
 if (activeSection) {
