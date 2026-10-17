@@ -15,6 +15,7 @@ console.log("navigation");
 const flashcardForm = document.querySelector("#flashcard-form");
 const frontInput = document.querySelector("#flashcard-question");
 const backInput = document.querySelector("#flashcard-answer");
+const flashcardList = document.querySelector("#flashcard-list");
 
 flashcardForm.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -28,6 +29,31 @@ flashcardForm.addEventListener("submit", function (event) {
 };
 
 console.log(newCard);
+const cardElement = document.createElement("article");
+cardElement.className = "flashcard-item";
+
+const questionElement = document.createElement("h4");
+questionElement.textContent = newCard.front;
+
+const answerElement = document.createElement("p");
+answerElement.textContent = newCard.back;
+
+cardElement.append(questionElement, answerElement);
+
+flashcardList.append(cardElement);
+const cardCount = document.querySelector("#count-javascript");
+
+cardCount.textContent = flashcardList.children.length;
+const flashcardMessage = document.querySelector("#flashcard-message");
+
+flashcardMessage.textContent = "Flashcard added successfully!";
+
+
+flashcardForm.reset();
+
+if (!question || !answer) {
+    return;
+}
 });
 
 
