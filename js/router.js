@@ -60,6 +60,7 @@ if (currentRoute.startsWith("#/study/")) {
     document.getElementById("study-session").hidden = false;
 }
 }
-window.addEventListener("hashchange", renderRoute);
-
+window.addEventListener("hashchange", function () {
+    window.dispatchEvent(new CustomEvent("deckroutechange"));
+});
 renderRoute();

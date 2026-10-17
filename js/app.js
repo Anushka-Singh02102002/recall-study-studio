@@ -7,6 +7,16 @@ console.log(getCurrentRoute());
 const flashcards = JSON.parse(
     localStorage.getItem("recall-flashcards") || "[]"
 );
+flashcards.forEach((card) => {
+    if (!card.deckId) {
+        card.deckId = "javascript";
+    }
+});
+
+localStorage.setItem(
+    "recall-flashcards",
+    JSON.stringify(flashcards)
+);
 
 const pageTitle = document.querySelector("h1");
 console.log(pageTitle);
@@ -21,6 +31,10 @@ const flashcardForm = document.querySelector("#flashcard-form");
 const frontInput = document.querySelector("#flashcard-question");
 const backInput = document.querySelector("#flashcard-answer");
 const flashcardList = document.querySelector("#flashcard-list");
+const currentRoute = getCurrentRoute();
+const routeParts = currentRoute.split("/");
+const currentDeckId = routeParts[2] || "javascript";
+console.log("Current deck:", currentDeckId);
 
 
 function displayFlashcard(card) {
@@ -37,8 +51,25 @@ function displayFlashcard(card) {
     flashcardList.append(cardElement);
 }
 
+function renderCurrentDeckCards() {
+    flashcardList.replaceChildren();
 
-flashcards.forEach(displayFlashcard);
+    const currentRoute = getCurrentRoute();
+    const routeParts = currentRoute.split("/");
+    const currentDeckId = routeParts[2];
+
+    const currentDeckCards = flashcards.filter(
+        (card) => card.deckId === currentDeckId
+    );
+
+    currentDeckCards.forEach(displayFlashcard);
+}
+window.addEventListener("deckroutechange", function () {
+    renderCurrentDeckCards();
+});
+
+renderCurrentDeckCards();
+
 
 
 flashcardForm.addEventListener("submit", function (event) {
@@ -46,6 +77,7 @@ flashcardForm.addEventListener("submit", function (event) {
 
     const question = frontInput.value.trim();
     const answer = backInput.value.trim();
+    const currentDeckId = getCurrentRoute().split("/")[2] || "javascript";
 
   
     if (!question || !answer) {
@@ -54,11 +86,12 @@ flashcardForm.addEventListener("submit", function (event) {
         return;
     }
 
-
     const newCard = {
-        front: question,
-        back: answer
-    };
+    id: crypto.randomUUID(),
+    deckId: currentDeckId,
+    front: question,
+    back: answer
+      };
 
    
     flashcards.push(newCard);
@@ -72,8 +105,11 @@ flashcardForm.addEventListener("submit", function (event) {
     displayFlashcard(newCard);
 
     
-    const cardCount = document.querySelector("#count-javascript");
+   const cardCount = document.querySelector(`#count-${currentDeckId}`);
+
+if (cardCount) {
     cardCount.textContent = flashcardList.children.length;
+}
 
     
     const flashcardMessage = document.querySelector("#flashcard-message");
