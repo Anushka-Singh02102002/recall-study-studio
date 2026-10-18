@@ -1,8 +1,40 @@
 
 import { decks } from "./store.js";
 import { getCurrentRoute } from "./router.js";
+import { starterFlashcards } from "./data.js";
 
 console.log(getCurrentRoute());
+const savedCards = JSON.parse(
+    localStorage.getItem("recall-flashcards") || "[]"
+);
+
+starterFlashcards.forEach((starterCard) => {
+    const alreadyExists = savedCards.some(
+        (card) =>
+            card.deckId === starterCard.deckId &&
+            card.front === starterCard.front
+    );
+
+    if (!alreadyExists) {
+        savedCards.push({
+            id: crypto.randomUUID(),
+            status: "new",
+            image: "",
+            createdAt: new Date().toISOString(),
+            scheduling: {
+                box: 1,
+                nextReview: null,
+                reviews: 0
+            },
+            ...starterCard
+        });
+    }
+});
+
+localStorage.setItem(
+    "recall-flashcards",
+    JSON.stringify(savedCards)
+);
 
 const flashcards = JSON.parse(
     localStorage.getItem("recall-flashcards") || "[]"
