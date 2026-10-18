@@ -31,6 +31,7 @@ const flashcardForm = document.querySelector("#flashcard-form");
 const frontInput = document.querySelector("#flashcard-question");
 const backInput = document.querySelector("#flashcard-answer");
 const flashcardList = document.querySelector("#flashcard-list");
+let editingCardId = null;
 const currentRoute = getCurrentRoute();
 const routeParts = currentRoute.split("/");
 const currentDeckId = routeParts[2] || "javascript";
@@ -46,8 +47,55 @@ function displayFlashcard(card) {
 
     const answerElement = document.createElement("p");
     answerElement.textContent = card.back;
+     
+    const deleteButton = document.createElement("button");
+deleteButton.type = "button";
+deleteButton.textContent = "Delete";
+deleteButton.className = "flashcard-delete";
+const editButton = document.createElement("button");
+editButton.type = "button";
+editButton.textContent = "Edit";
+editButton.className = "flashcard-edit";
+editButton.addEventListener("click", function () {
+    editingCardId = card.id;
 
-    cardElement.append(questionElement, answerElement);
+    frontInput.value = card.front;
+    backInput.value = card.back;
+
+    frontInput.focus();
+});
+deleteButton.addEventListener("click", function () {
+    const cardIndex = flashcards.findIndex(
+        (item) => item.id === card.id
+    );
+
+    if (cardIndex === -1) {
+        return;
+    }
+
+    flashcards.splice(cardIndex, 1);
+
+    localStorage.setItem(
+        "recall-flashcards",
+        JSON.stringify(flashcards)
+    );
+
+    renderCurrentDeckCards();
+    const currentDeckId = getCurrentRoute().split("/")[2];
+const cardCount = document.querySelector(`#count-${currentDeckId}`);
+
+if (cardCount) {
+    cardCount.textContent = flashcards.filter(
+        (item) => item.deckId === currentDeckId
+    ).length;
+}
+});
+    cardElement.append(
+    questionElement,
+    answerElement,
+    editButton,
+    deleteButton
+);
     flashcardList.append(cardElement);
 }
 
@@ -86,15 +134,30 @@ flashcardForm.addEventListener("submit", function (event) {
         return;
     }
 
-    const newCard = {
-    id: crypto.randomUUID(),
-    deckId: currentDeckId,
-    front: question,
-    back: answer
-      };
+    if (editingCardId) {
+    const cardIndex = flashcards.findIndex(
+        (card) => card.id === editingCardId
+    );
 
-   
+    if (cardIndex !== -1) {
+        flashcards[cardIndex] = {
+            ...flashcards[cardIndex],
+            front: question,
+            back: answer
+        };
+    }
+
+    editingCardId = null;
+} else {
+    const newCard = {
+        id: crypto.randomUUID(),
+        deckId: getCurrentRoute().split("/")[2] || "javascript",
+        front: question,
+        back: answer
+    };
+
     flashcards.push(newCard);
+}
 
     localStorage.setItem(
         "recall-flashcards",
