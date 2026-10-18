@@ -168,7 +168,7 @@ deleteButton.addEventListener("click", function () {
     updateDueCount("javascript");
     updateDueCount("python");
     updateDueCount("algorithms");
-    
+
     const currentDeckId = getCurrentRoute().split("/")[2];
 const cardCount = document.querySelector(`#count-${currentDeckId}`);
 
@@ -221,8 +221,14 @@ window.addEventListener("deckroutechange", function () {
 
 
 renderCurrentDeckCards();
+let searchTimeout;
+
 searchInput.addEventListener("input", function () {
-    renderCurrentDeckCards();
+    clearTimeout(searchTimeout);
+
+    searchTimeout = setTimeout(function () {
+        renderCurrentDeckCards();
+    }, 300);
 });
 tagFilterInput.addEventListener("input", function () {
     renderCurrentDeckCards();
