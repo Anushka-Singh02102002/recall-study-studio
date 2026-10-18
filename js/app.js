@@ -39,11 +39,12 @@ localStorage.setItem(
 const flashcards = JSON.parse(
     localStorage.getItem("recall-flashcards") || "[]"
 );
+
 flashcards.forEach((card) => {
     if (!card.deckId) {
         card.deckId = "javascript";
     }
-})
+});
 
 localStorage.setItem(
     "recall-flashcards",
@@ -397,7 +398,7 @@ if (cardCount) {
 const studyFlashcard = document.querySelector("#study-flashcard");
 const studyQuestion = document.querySelector("#study-question");
 const studyAnswer = document.querySelector("#study-answer");
-
+let currentStudyCard = null;
 function loadStudyCard() {
     const routeParts = getCurrentRoute().split("/");
     const deckId = routeParts[2];
@@ -412,9 +413,13 @@ function loadStudyCard() {
         return;
     }
 
-    studyQuestion.textContent = deckCards[0].front;
-    studyAnswer.textContent = deckCards[0].back;
+    currentStudyCard = deckCards[0];
+
+currentStudyCard = deckCards[0];
+studyQuestion.textContent = currentStudyCard.front;
+studyAnswer.textContent = currentStudyCard.back;
 }
+
 loadStudyCard();
 
 
@@ -436,6 +441,7 @@ function showNextStudyCard() {
     if (currentStudyIndex >= deckCards.length) {
         currentStudyIndex = 0;
     }
+    currentStudyCard = deckCards[currentStudyIndex];
 
     studyQuestion.textContent =
         deckCards[currentStudyIndex].front;
@@ -520,6 +526,46 @@ const totalStudyCards = flashcards.filter(
 
 
 let previousStudyState = null;
+function saveFlashcards() {
+    localStorage.setItem(
+        "recall-flashcards",
+        JSON.stringify(flashcards)
+    );
+}
+function scheduleNextReview(card, knowsAnswer) {
+    if (!card.scheduling) {
+        card.scheduling = {
+            box: 1,
+            nextReview: null,
+            reviews: 0
+        };
+    }
+
+    card.scheduling.reviews++;
+
+    if (knowsAnswer) {
+        card.scheduling.box = Math.min(
+            card.scheduling.box + 1,
+            5
+        );
+    } else {
+        card.scheduling.box = 1;
+    }
+
+    const daysToWait = knowsAnswer
+        ? card.scheduling.box
+        : 1;
+
+    const nextReview = new Date();
+    nextReview.setDate(
+        nextReview.getDate() + daysToWait
+    );
+
+    card.scheduling.nextReview =
+        nextReview.toISOString().split("T")[0];
+
+    saveFlashcards();
+}
 
 function updateStudyProgress() {
     
@@ -547,10 +593,25 @@ function updateStudyProgress() {
         showNextStudyCard();
     }
 }
+knowAnswerButton.addEventListener("click", function () {
+    if (currentStudyCard) {
+        currentStudyCard.status = "learning";
+        scheduleNextReview(currentStudyCard, true);
+    }
+
+    updateStudyProgress();
+});
+
+reviewAnswerButton.addEventListener("click", function () {
+    if (currentStudyCard) {
+        currentStudyCard.status = "new";
+        scheduleNextReview(currentStudyCard, false);
+    }
+
+    updateStudyProgress();
+});
 
 
-knowAnswerButton.addEventListener("click", updateStudyProgress);
-reviewAnswerButton.addEventListener("click", updateStudyProgress);
 function undoLastStudyAction() {
     if (previousStudyState === null) {
         return;
