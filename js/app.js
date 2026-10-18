@@ -158,6 +158,16 @@ flashcardForm.addEventListener("submit", async function (event) {
     let imageData = "";
 
 const selectedFile = fileInput.files[0];
+if (selectedFile && !selectedFile.type.startsWith("image/")) {
+    document.querySelector("#flashcard-message").textContent =
+        "Please select an image file.";
+    return;
+}
+if (selectedFile && selectedFile.size > 2 * 1024 * 1024) {
+    document.querySelector("#flashcard-message").textContent =
+        "Image size must be 2 MB or less.";
+    return;
+}
 
 if (selectedFile) {
     try {
