@@ -11,7 +11,7 @@ flashcards.forEach((card) => {
     if (!card.deckId) {
         card.deckId = "javascript";
     }
-});
+})
 
 localStorage.setItem(
     "recall-flashcards",
@@ -34,6 +34,7 @@ const hintInput = document.querySelector("#flashcard-hint");
 const tagsInput = document.querySelector("#flashcard-tags");
 const fileInput = document.querySelector("#flashcard-file");
 const flashcardList = document.querySelector("#flashcard-list");
+const searchInput = document.querySelector("#flashcard-search");
 let editingCardId = null;
 const currentRoute = getCurrentRoute();
 const routeParts = currentRoute.split("/");
@@ -133,21 +134,33 @@ if (cardCount) {
 function renderCurrentDeckCards() {
     flashcardList.replaceChildren();
 
-    const currentRoute = getCurrentRoute();
-    const routeParts = currentRoute.split("/");
-    const currentDeckId = routeParts[2];
+   const searchTerm = searchInput.value.trim().toLowerCase();
 
-    const currentDeckCards = flashcards.filter(
-        (card) => card.deckId === currentDeckId
+const currentDeckCards = flashcards.filter((card) => {
+    const belongsToCurrentDeck = card.deckId === currentDeckId;
+
+    const matchesSearch =
+    card.front.toLowerCase().includes(searchTerm) ||
+    card.back.toLowerCase().includes(searchTerm) ||
+    (card.tags || []).some(tag =>
+        tag.toLowerCase().includes(searchTerm)
     );
 
-    currentDeckCards.forEach(displayFlashcard);
+    return belongsToCurrentDeck && matchesSearch;
+});
+
+currentDeckCards.forEach(displayFlashcard);
 }
 window.addEventListener("deckroutechange", function () {
     renderCurrentDeckCards();
 });
 
+
 renderCurrentDeckCards();
+searchInput.addEventListener("input", function () {
+    renderCurrentDeckCards();
+});
+
 
 
 flashcardForm.addEventListener("submit", async function (event) {
