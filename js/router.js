@@ -62,6 +62,8 @@ if (currentRoute.startsWith("#/study/")) {
 }
 }
 window.addEventListener("hashchange", function () {
+    renderRoute();
     window.dispatchEvent(new CustomEvent("deckroutechange"));
 });
+
 renderRoute();

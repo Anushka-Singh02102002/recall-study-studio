@@ -321,6 +321,7 @@ if (selectedFile) {
     const newCard = {
     id: crypto.randomUUID(),
     deckId: getCurrentRoute().split("/")[2] || "javascript",
+    status: "new",
     front: question,
     back: answer,
     image: imageData,
@@ -361,6 +362,223 @@ if (cardCount) {
     
     flashcardForm.reset();
 });
+const studyFlashcard = document.querySelector("#study-flashcard");
+const studyQuestion = document.querySelector("#study-question");
+const studyAnswer = document.querySelector("#study-answer");
+
+function loadStudyCard() {
+    const routeParts = getCurrentRoute().split("/");
+    const deckId = routeParts[2];
+
+    const deckCards = flashcards.filter(
+        (card) => card.deckId === deckId
+    );
+
+    if (deckCards.length === 0) {
+        studyQuestion.textContent = "No flashcards available.";
+        studyAnswer.textContent = "Add some flashcards to start studying.";
+        return;
+    }
+
+    studyQuestion.textContent = deckCards[0].front;
+    studyAnswer.textContent = deckCards[0].back;
+}
+loadStudyCard();
+
+
+let currentStudyIndex = 0;
+
+function showNextStudyCard() {
+    const deckId = getCurrentRoute().split("/")[2];
+
+    const deckCards = flashcards.filter(
+        (card) => card.deckId === deckId
+    );
+
+    if (deckCards.length === 0) {
+        return;
+    }
+
+    currentStudyIndex++;
+
+    if (currentStudyIndex >= deckCards.length) {
+        currentStudyIndex = 0;
+    }
+
+    studyQuestion.textContent =
+        deckCards[currentStudyIndex].front;
+
+    studyAnswer.textContent =
+        deckCards[currentStudyIndex].back;
+
+    studyFlashcard.classList.remove("is-flipped");
+}
+
+
+studyFlashcard.addEventListener("click", function () {
+    studyFlashcard.classList.toggle("is-flipped");
+});
+document.addEventListener("keydown", function (event) {
+    // Space: Flip the flashcard
+    if (event.code === "Space") {
+        event.preventDefault();
+        studyFlashcard.classList.toggle("is-flipped");
+    }
+
+    
+    if (
+        event.target.matches("input, textarea, select") ||
+        event.target.isContentEditable
+    ) {
+        return;
+    }
+
+    if (event.key === "1" && !knowAnswerButton.disabled) {
+        knowAnswerButton.click();
+    }
+
+    if (event.key === "2" && !reviewAnswerButton.disabled) {
+        reviewAnswerButton.click();
+    }
+
+    if (event.key.toLowerCase() === "z" &&!undoActionButton.disabled)
+{
+    undoActionButton.click();
+}
+});
+
+const startStudyButton = document.querySelector("#start-study");
+const studySession = document.querySelector("#study-session");
+
+startStudyButton.addEventListener("click", function () {
+    const currentRoute = getCurrentRoute();
+    const routeParts = currentRoute.split("/");
+    const deckId = routeParts[2] || "javascript";
+
+    reviewedCards = 0;
+    currentStudyIndex = 0;
+
+    knowAnswerButton.disabled = false;
+    reviewAnswerButton.disabled = false;
+
+    sessionProgress.value = 0;
+    sessionProgressText.textContent =
+        `0 out of ${totalStudyCards} cards reviewed`;
+
+    studyTimer.textContent = "00:00";
+
+    loadStudyCard();
+    startStudyTimer();
+
+    window.location.hash = `#/study/${deckId}`;
+});
+
+
+const knowAnswerButton = document.querySelector("#know-answer");
+const undoActionButton = document.querySelector("#undo-action");
+const reviewAnswerButton = document.querySelector("#review-answer");
+const sessionProgress = document.querySelector("#session-progress");
+const sessionProgressText = document.querySelector("#session-progress-text");
+
+let reviewedCards = 0;
+const totalStudyCards = flashcards.filter(
+    (card) =>
+        card.deckId === getCurrentRoute().split("/")[2]
+).length;
+
+
+let previousStudyState = null;
+
+function updateStudyProgress() {
+    
+    previousStudyState = {
+        reviewedCards: reviewedCards,
+        studyIndex: currentStudyIndex,
+        question: studyQuestion.textContent,
+        answer: studyAnswer.textContent,
+        isFlipped: studyFlashcard.classList.contains("is-flipped")
+    };
+
+    reviewedCards++;
+
+    sessionProgress.value = reviewedCards;
+    sessionProgressText.textContent =
+        `${reviewedCards} out of ${totalStudyCards} cards reviewed`;
+
+    undoActionButton.disabled = false;
+
+    if (reviewedCards >= totalStudyCards) {
+        knowAnswerButton.disabled = true;
+        reviewAnswerButton.disabled = true;
+        sessionProgressText.textContent = "Study session completed!";
+    } else {
+        showNextStudyCard();
+    }
+}
+
+
+knowAnswerButton.addEventListener("click", updateStudyProgress);
+reviewAnswerButton.addEventListener("click", updateStudyProgress);
+function undoLastStudyAction() {
+    if (previousStudyState === null) {
+        return;
+    }
+
+    reviewedCards = previousStudyState.reviewedCards;
+    currentStudyIndex = previousStudyState.studyIndex;
+
+    studyQuestion.textContent = previousStudyState.question;
+    studyAnswer.textContent = previousStudyState.answer;
+
+    studyFlashcard.classList.toggle(
+        "is-flipped",
+        previousStudyState.isFlipped
+    );
+
+    sessionProgress.value = reviewedCards;
+    sessionProgressText.textContent =
+        `${reviewedCards} out of ${totalStudyCards} cards reviewed`;
+
+    knowAnswerButton.disabled = false;
+    reviewAnswerButton.disabled = false;
+    undoActionButton.disabled = true;
+
+    previousStudyState = null;
+}
+
+undoActionButton.addEventListener("click", undoLastStudyAction);
+
+
+const studyTimer = document.querySelector(".study-session__timer time");
+
+let studyStartTime = null;
+let studyTimerInterval = null;
+
+function startStudyTimer() {
+    if (studyTimerInterval !== null) {
+        clearInterval(studyTimerInterval);
+    }
+
+    studyStartTime = Date.now();
+
+    studyTimerInterval = setInterval(function () {
+        const elapsedSeconds = Math.floor(
+            (Date.now() - studyStartTime) / 1000
+        );
+
+        const minutes = String(
+            Math.floor(elapsedSeconds / 60)
+        ).padStart(2, "0");
+
+        const seconds = String(
+            elapsedSeconds % 60
+        ).padStart(2, "0");
+
+        studyTimer.textContent = `${minutes}:${seconds}`;
+    }, 1000);
+}
+
+
 
 
 
