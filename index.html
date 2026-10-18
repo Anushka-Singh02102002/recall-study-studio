@@ -73,6 +73,7 @@
         <p>Learn JavaScript concepts and practice questions.</p>
         
 <p>Flashcards: <span id="count-javascript">0</span></p>
+<p>Due for review: <span id="due-javascript">0</span></p>
 
         <a href="#/deck/javascript">Open Deck</a>
 
@@ -89,6 +90,7 @@
         <h3>Python</h3>
         <p>Learn Python concepts and practice questions.</p>
         <p>Flashcards: <span id="count-python">0</span></p>
+        <p>Due for review: <span id="due-python">0</span></p>
         <a href="#/deck/python">Open Deck</a>
 
 <button type="button" class="edit-deck">
@@ -105,6 +107,7 @@
     <p>Practice algorithms and problem-solving concepts.</p>
 
 <p>Flashcards: <span id="count-algorithms">0</span></p>
+<p>Due for review: <span id="due-algorithms">0</span></p>
 
 
     <a href="#/deck/algorithms">Open Deck</a>
@@ -149,6 +152,15 @@
         type="search"
         id="flashcard-search"
         placeholder="Search by question or answer"
+        autocomplete="off"
+    >
+</div>
+<div class="form-row">
+    <label for="flashcard-tag-filter">Filter by tag:</label>
+    <input
+        type="text"
+        id="flashcard-tag-filter"
+        placeholder="Enter a tag"
         autocomplete="off"
     >
 </div>
