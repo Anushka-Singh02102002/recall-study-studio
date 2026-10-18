@@ -87,6 +87,7 @@ const fileInput = document.querySelector("#flashcard-file");
 const flashcardList = document.querySelector("#flashcard-list");
 const searchInput = document.querySelector("#flashcard-search");
 const tagFilterInput = document.querySelector("#flashcard-tag-filter");
+const statusFilterInput = document.querySelector("#flashcard-status-filter");
 let editingCardId = null;
 const currentRoute = getCurrentRoute();
 const routeParts = currentRoute.split("/");
@@ -192,6 +193,8 @@ function renderCurrentDeckCards() {
 
    const searchTerm = searchInput.value.trim().toLowerCase();
    const selectedTag = tagFilterInput.value.trim().toLowerCase();
+   const selectedStatus = statusFilterInput.value;
+const today = new Date().toISOString().slice(0, 10);
 
 const currentDeckCards = flashcards.filter((card) => {
     const belongsToCurrentDeck = card.deckId === currentDeckId;
@@ -209,7 +212,26 @@ const matchesTag =
         tag.toLowerCase().includes(selectedTag)
     );
 
-return belongsToCurrentDeck && matchesSearch && matchesTag;  
+const cardStatus = card.status || "new";
+
+const isDue =
+    card.scheduling &&
+    card.scheduling.nextReview &&
+    card.scheduling.nextReview <= today;
+
+const matchesStatus =
+    selectedStatus === "all" ||
+    (selectedStatus === "new" && cardStatus === "new") ||
+    (selectedStatus === "learning" && cardStatus === "learning") ||
+    (selectedStatus === "due" && isDue) ||
+    (selectedStatus === "leech" && cardStatus === "leech");
+    
+return (
+    belongsToCurrentDeck &&
+    matchesSearch &&
+    matchesTag &&
+    matchesStatus
+);
 
 });
 
@@ -231,6 +253,9 @@ searchInput.addEventListener("input", function () {
     }, 300);
 });
 tagFilterInput.addEventListener("input", function () {
+    renderCurrentDeckCards();
+});
+statusFilterInput.addEventListener("change", function () {
     renderCurrentDeckCards();
 });
 
