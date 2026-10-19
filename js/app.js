@@ -457,7 +457,7 @@ studyFlashcard.addEventListener("click", function () {
     studyFlashcard.classList.toggle("is-flipped");
 });
 document.addEventListener("keydown", function (event) {
-    // Space: Flip the flashcard
+
     if (event.code === "Space") {
         event.preventDefault();
         studyFlashcard.classList.toggle("is-flipped");
@@ -532,6 +532,186 @@ function saveFlashcards() {
         JSON.stringify(flashcards)
     );
 }
+    function updateStatsDashboard() {
+    const totalFlashcards = flashcards.length;
+    const today = new Date().toISOString().slice(0, 10);
+    const reviewedDates = new Set();
+
+flashcards.forEach((card) => {
+    const dailyReviews = card.scheduling?.dailyReviews || {};
+
+    Object.entries(dailyReviews).forEach(([date, count]) => {
+        if (count > 0) {
+            reviewedDates.add(date);
+        }
+    });
+});
+let currentStreak = 0;
+
+const checkDate = new Date();
+checkDate.setHours(0, 0, 0, 0);
+
+while (true) {
+    const dateString = [
+        checkDate.getFullYear(),
+        String(checkDate.getMonth() + 1).padStart(2, "0"),
+        String(checkDate.getDate()).padStart(2, "0")
+    ].join("-");
+
+    if (!reviewedDates.has(dateString)) {
+        break;
+    }
+
+    currentStreak++;
+    checkDate.setDate(checkDate.getDate() - 1);
+}
+
+if (currentStreak === 0) {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const yesterdayString = [
+        yesterday.getFullYear(),
+        String(yesterday.getMonth() + 1).padStart(2, "0"),
+        String(yesterday.getDate()).padStart(2, "0")
+    ].join("-");
+
+    if (reviewedDates.has(yesterdayString)) {
+        checkDate.setTime(yesterday.getTime());
+
+        while (true) {
+            const dateString = [
+                checkDate.getFullYear(),
+                String(checkDate.getMonth() + 1).padStart(2, "0"),
+                String(checkDate.getDate()).padStart(2, "0")
+            ].join("-");
+
+            if (!reviewedDates.has(dateString)) {
+                break;
+            }
+
+            currentStreak++;
+            checkDate.setDate(checkDate.getDate() - 1);
+        }
+    }
+}
+
+document.querySelector("#stats-current-streak").textContent =
+    `${currentStreak} ${currentStreak === 1 ? "day" : "days"}`;
+
+const todayReviews = flashcards.reduce((total, card) => {
+    return total + (card.scheduling?.dailyReviews?.[today] || 0);
+}, 0);
+
+const todayProgress = document.querySelector("#stats-today-progress");
+
+if (todayProgress) {
+    todayProgress.textContent = `${todayReviews} cards reviewed today`;
+    todayProgress.setAttribute(
+        "aria-label",
+        `Today's study progress: ${todayReviews} cards reviewed`
+    );
+}
+
+    const totalReviews = flashcards.reduce((total, card) => {
+        return total + (card.scheduling?.reviews || 0);
+    }, 0);
+
+    const masteredCards = flashcards.filter(card => {
+        return card.scheduling?.box === 5;
+    }).length;
+
+    const correctReviews = flashcards.reduce((total, card) => {
+        return total + (card.scheduling?.correctReviews || 0);
+    }, 0);
+
+    const incorrectReviews = flashcards.reduce((total, card) => {
+        return total + (card.scheduling?.incorrectReviews || 0);
+    }, 0);
+
+    const totalRatedReviews = correctReviews + incorrectReviews;
+
+    const accuracy = totalRatedReviews > 0
+        ? Math.round((correctReviews / totalRatedReviews) * 100)
+        : 0;
+    const dailyProgress = {};
+
+flashcards.forEach((card) => {
+    const dailyReviews = card.scheduling?.dailyReviews || {};
+
+    Object.entries(dailyReviews).forEach(([date, count]) => {
+        if (!dailyProgress[date]) {
+            dailyProgress[date] = {
+                reviews: 0,
+                correct: 0,
+                incorrect: 0
+            };
+        }
+
+        dailyProgress[date].reviews += count;
+        const dailyResults = card.scheduling?.dailyResults || {};
+const resultsForDate = dailyResults[date];
+
+if (resultsForDate) {
+    dailyProgress[date].correct += resultsForDate.correct || 0;
+    dailyProgress[date].incorrect += resultsForDate.incorrect || 0;
+}
+    });
+    const dailyProgressBody = document.querySelector(
+    "#stats-daily-progress-body"
+);
+
+if (dailyProgressBody) {
+    dailyProgressBody.replaceChildren();
+
+    const sortedDates = Object.keys(dailyProgress).sort().reverse();
+
+    if (sortedDates.length === 0) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+
+        cell.colSpan = 3;
+        cell.textContent = "No study activity recorded yet.";
+
+        row.appendChild(cell);
+        dailyProgressBody.appendChild(row);
+    } else {
+        sortedDates.forEach((date) => {
+            const row = document.createElement("tr");
+
+            const dateCell = document.createElement("td");
+            dateCell.textContent = date;
+
+            const reviewsCell = document.createElement("td");
+            reviewsCell.textContent = dailyProgress[date].reviews;
+
+            const accuracyCell = document.createElement("td");
+           const dailyCorrect = dailyProgress[date].correct;
+const dailyIncorrect = dailyProgress[date].incorrect;
+const totalDailyRated = dailyCorrect + dailyIncorrect;
+
+const dailyAccuracy = totalDailyRated > 0
+    ? Math.round((dailyCorrect / totalDailyRated) * 100)
+    : 0;
+
+accuracyCell.textContent = `${dailyAccuracy}%`;
+
+            row.append(dateCell, reviewsCell, accuracyCell);
+            dailyProgressBody.appendChild(row);
+        });
+    }
+}
+
+});    
+
+    document.querySelector("#stats-total-flashcards").textContent = totalFlashcards;
+    document.querySelector("#stats-cards-reviewed").textContent = totalReviews;
+    document.querySelector("#stats-cards-mastered").textContent = masteredCards;
+    document.querySelector("#stats-accuracy-text").textContent =
+        `Current accuracy: ${accuracy}%`;
+    document.querySelector("#study-accuracy").value = accuracy;
+}
+
 function scheduleNextReview(card, knowsAnswer) {
     if (!card.scheduling) {
         card.scheduling = {
@@ -542,6 +722,43 @@ function scheduleNextReview(card, knowsAnswer) {
     }
 
     card.scheduling.reviews++;
+    const today = new Date().toISOString().slice(0, 10);
+
+if (!card.scheduling.dailyReviews) {
+    card.scheduling.dailyReviews = {};
+}
+
+card.scheduling.dailyReviews[today] =
+    (card.scheduling.dailyReviews[today] || 0) + 1;
+    if (card.scheduling.correctReviews === undefined) {
+    card.scheduling.correctReviews = 0;
+}
+
+if (card.scheduling.incorrectReviews === undefined) {
+    card.scheduling.incorrectReviews = 0;
+}
+
+if (knowsAnswer) {
+    card.scheduling.correctReviews++;
+} else {
+    card.scheduling.incorrectReviews++;
+}
+const reviewDate = new Date().toISOString().slice(0, 10);
+if (!card.scheduling.dailyResults) {
+    card.scheduling.dailyResults = {};
+}
+if (!card.scheduling.dailyResults[reviewDate]) {
+    card.scheduling.dailyResults[reviewDate] = {
+        correct: 0,
+        incorrect: 0
+    };
+}
+
+if (knowsAnswer) {
+    card.scheduling.dailyResults[reviewDate].correct++;
+} else {
+    card.scheduling.dailyResults[reviewDate].incorrect++;
+}
 
     if (knowsAnswer) {
         card.scheduling.box = Math.min(
@@ -592,6 +809,7 @@ function updateStudyProgress() {
     } else {
         showNextStudyCard();
     }
+    updateStatsDashboard();
 }
 knowAnswerButton.addEventListener("click", function () {
     if (currentStudyCard) {
@@ -670,7 +888,7 @@ function startStudyTimer() {
         studyTimer.textContent = `${minutes}:${seconds}`;
     }, 1000);
 }
-
+updateStatsDashboard();
 
 
 

@@ -428,20 +428,20 @@
     <p>Track learning progress and performance over time.</p>
     <article>
     <h3>Total Flashcards</h3>
-    <p>0</p>
-    </article>
+    <p id="stats-total-flashcards">0</p>
+</article>
       <article>
         <h3>Cards Reviewed</h3>
-        <p>0</p>
+        <p id="stats-cards-reviewed">0</p>
     </article>
 
     <article>
         <h3>Cards Mastered</h3>
-        <p>0</p>
+        <p id="stats-cards-mastered">0</p>
     </article>
       <article>
         <h3>Current Streak</h3>
-        <p>0 days</p>
+       <p id="stats-current-streak">0 days</p> 
     </article>
     <article>
         <h3>Study Accuracy</h3>
@@ -451,16 +451,19 @@
             max="100"
             low="40"
             high="80"
-            value="75"
+            value="0"
             optimum="100"
             ></meter>
-            <p>current accuracy: 75%</p>
-
+<p id="stats-accuracy-text">Current accuracy: 0%</p>
         </article>
         
 <figure>
-    <div role="img" aria-label="Study progress: 3 out of 10 flashcards reviewed">
-        3 / 10 cards reviewed
+    <div
+        id="stats-today-progress"
+        role="img"
+        aria-label="Today's study progress"
+    >
+        0 / 0 cards reviewed
     </div>
     <figcaption>Today's study progress</figcaption>
 </figure>
@@ -474,11 +477,9 @@
             <th scope="col">Accuracy</th>
         </tr>
         </thead>
-        <tbody>
+       <tbody id="stats-daily-progress-body">
     <tr>
-        <td>12 Oct</td>
-        <td>8</td>
-        <td>75%</td>
+        <td colspan="3">No study activity recorded yet.</td>
     </tr>
 </tbody>
     </table>
