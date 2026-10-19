@@ -653,6 +653,7 @@ if (heatmap) {
         Object.entries(dailyReviews).forEach(([date, count]) => {
             reviewCounts[date] = (reviewCounts[date] || 0) + count;
         });
+        
     });
 
     for (let i = 0; i < 365; i++) {
@@ -751,7 +752,38 @@ accuracyCell.textContent = `${dailyAccuracy}%`;
     }
 }
 
-});    
+});   
+const reviewsChart = document.querySelector("#stats-reviews-chart");
+
+if (reviewsChart) {
+    reviewsChart.replaceChildren();
+
+    const dates = Object.keys(dailyProgress).sort().slice(-7);
+
+    if (dates.length === 0) {
+        const message = document.createElement("p");
+        message.textContent = "No review activity yet.";
+        reviewsChart.appendChild(message);
+    } else {
+        const maxReviews = Math.max(
+            ...dates.map((date) => dailyProgress[date].reviews),
+            1
+        );
+
+        dates.forEach((date) => {
+            const count = dailyProgress[date].reviews;
+            const bar = document.createElement("div");
+
+            bar.classList.add("stats-reviews-chart__bar");
+            bar.style.height = `${Math.max((count / maxReviews) * 160, 4)}px`;
+            bar.title = `${date}: ${count} reviews`;
+            bar.setAttribute("aria-hidden", "true");
+
+            reviewsChart.appendChild(bar);
+        });
+    }
+}
+
 
     document.querySelector("#stats-total-flashcards").textContent = totalFlashcards;
     document.querySelector("#stats-cards-reviewed").textContent = totalReviews;
