@@ -1159,7 +1159,40 @@ textarea:focus-visible {
         white-space: nowrap;
     }
 }
+@layer components {
+    .stats-accuracy-chart {
+        display: flex;
+        align-items: flex-end;
+        gap: 0.5rem;
+        min-height: 200px;
+        padding: 1rem;
+        margin-block: 1rem;
+        overflow-x: auto;
+        border-bottom: 1px solid var(--border-color);
+    }
 
+    .stats-accuracy-chart__line {
+    display: block;
+    width: 100%;
+    height: 160px;
+    overflow: visible;
+    color: #269b63;
+}
+}
+.stats-accuracy-chart__labels {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    width: 100%;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+}
+
+.stats-accuracy-chart__labels span {
+    text-align: center;
+    white-space: nowrap;
+}
 
 
     

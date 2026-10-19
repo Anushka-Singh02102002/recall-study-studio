@@ -707,7 +707,11 @@ if (resultsForDate) {
     dailyProgress[date].incorrect += resultsForDate.incorrect || 0;
 }
     });
-    const dailyProgressBody = document.querySelector(
+    
+    
+
+});   
+const dailyProgressBody = document.querySelector(
     "#stats-daily-progress-body"
 );
 
@@ -752,7 +756,6 @@ accuracyCell.textContent = `${dailyAccuracy}%`;
     }
 }
 
-});   
 const reviewsChart = document.querySelector("#stats-reviews-chart");
 
 if (reviewsChart) {
@@ -778,6 +781,7 @@ if (reviewsChart) {
             bar.classList.add("stats-reviews-chart__bar");
             bar.style.height = `${Math.max((count / maxReviews) * 160, 4)}px`;
             bar.title = `${date}: ${count} reviews`;
+            
             const dateLabel = document.createElement("span");
 dateLabel.textContent = `${date.slice(5)} (${count})`;
 dateLabel.classList.add("stats-reviews-chart__date");
@@ -789,10 +793,117 @@ reviewsChart.appendChild(barGroup);
 
             bar.setAttribute("role", "img");
             bar.setAttribute("aria-label", `${date}: ${count} reviews`);
-            bar.setAttribute("aria-hidden", "true");
+            
 
             reviewsChart.appendChild(bar);
         });
+    }
+}
+const accuracyChart = document.querySelector("#stats-accuracy-chart");
+
+if (accuracyChart) {
+    accuracyChart.replaceChildren();
+
+    const dates = Object.keys(dailyProgress)
+        .filter((date) => {
+            const day = dailyProgress[date];
+            return day.correct + day.incorrect > 0;
+        })
+        .sort()
+        .slice(-7);
+
+    if (dates.length === 0) {
+        const message = document.createElement("p");
+        message.textContent = "No accuracy history yet.";
+        message.setAttribute("role", "status");
+        accuracyChart.appendChild(message);
+    } else {
+        const svgNS = "http://www.w3.org/2000/svg";
+        const width = 600;
+        const height = 180;
+        const padding = 30;
+
+        const svg = document.createElementNS(svgNS, "svg");
+        svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+        svg.setAttribute("class", "stats-accuracy-chart__line");
+        svg.setAttribute("width", "100%");
+        svg.setAttribute("height", "160");
+        svg.setAttribute("role", "img");
+        svg.setAttribute(
+            "aria-label",
+            "Accuracy trend for the last seven study days"
+        );
+
+        const points = dates.map((date, index) => {
+            const day = dailyProgress[date];
+            const total = day.correct + day.incorrect;
+            const accuracy = Math.round((day.correct / total) * 100);
+
+            const x = dates.length === 1
+                ? width / 2
+                : padding + index * (width - padding * 2) / (dates.length - 1);
+
+            const y = height - padding -
+                (accuracy / 100) * (height - padding * 2);
+
+            return { date, accuracy, x, y };
+        });
+
+       const line = document.createElementNS(svgNS, "polyline");
+
+line.setAttribute(
+    "points",
+    points.map((point) => `${point.x},${point.y}`).join(" ")
+);
+
+line.setAttribute("fill", "none");
+line.setAttribute("stroke", "#269b63");
+line.setAttribute("stroke-width", "3");
+line.setAttribute("stroke-linecap", "round");
+line.setAttribute("stroke-linejoin", "round");
+
+svg.appendChild(line);
+if (points.length === 1) {
+    const point = points[0];
+    const singlePointLine = document.createElementNS(svgNS, "line");
+
+    singlePointLine.setAttribute("x1", padding);
+    singlePointLine.setAttribute("y1", point.y);
+    singlePointLine.setAttribute("x2", width - padding);
+    singlePointLine.setAttribute("y2", point.y);
+    singlePointLine.setAttribute("stroke", "#269b63");
+    singlePointLine.setAttribute("stroke-width", "3");
+    singlePointLine.setAttribute("stroke-linecap", "round");
+
+    svg.appendChild(singlePointLine);
+}
+
+        points.forEach((point) => {
+            const circle = document.createElementNS(svgNS, "circle");
+            circle.setAttribute("cx", point.x);
+            circle.setAttribute("cy", point.y);
+            circle.setAttribute("r", "5");
+            circle.setAttribute("fill", "currentColor");
+
+            const title = document.createElementNS(svgNS, "title");
+            title.textContent = `${point.date}: ${point.accuracy}% accuracy`;
+            circle.appendChild(title);
+            svg.appendChild(circle);
+        });
+
+        accuracyChart.appendChild(svg);
+
+        const labels = document.createElement("div");
+        labels.classList.add("stats-accuracy-chart__labels");
+
+        points.forEach((point) => {
+            const label = document.createElement("span");
+            label.textContent =
+                `${point.date.slice(5)} · ${point.accuracy}%`;
+            labels.appendChild(label);
+        });
+
+        accuracyChart.appendChild(labels);
     }
 }
 
