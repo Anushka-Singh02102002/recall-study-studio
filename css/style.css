@@ -1071,6 +1071,46 @@ textarea:focus-visible {
         transition: none;
     }
 }
+@layer components {
+    .stats-chart {
+        margin-block: 2rem;
+        padding: 1.5rem;
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        background: var(--card-background);
+    }
+
+    .stats-heatmap {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 0.4rem;
+        margin-block: 1rem;
+    }
+
+    .stats-heatmap__day {
+        aspect-ratio: 1;
+        min-width: 0;
+        border-radius: 0.25rem;
+        background: #e8eee9;
+    }
+
+    .stats-heatmap__day--low {
+        background: #c8e6d3;
+    }
+
+    .stats-heatmap__day--medium {
+        background: #80c99b;
+    }
+
+    .stats-heatmap__day--high {
+        background: #278653;
+    }
+
+    .stats-chart__legend {
+        font-size: 0.875rem;
+        color: var(--text-color);
+    }
+}
 
 
 

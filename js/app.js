@@ -403,6 +403,7 @@ function loadStudyCard() {
     const routeParts = getCurrentRoute().split("/");
     const deckId = routeParts[2];
 
+     const today = new Date().toISOString().slice(0, 10);
     const deckCards = flashcards.filter(
         (card) => card.deckId === deckId
     );
@@ -429,8 +430,8 @@ function showNextStudyCard() {
     const deckId = getCurrentRoute().split("/")[2];
 
     const deckCards = flashcards.filter(
-        (card) => card.deckId === deckId
-    );
+    (card) => card.deckId === deckId
+);
 
     if (deckCards.length === 0) {
         return;
@@ -635,6 +636,54 @@ if (todayProgress) {
         ? Math.round((correctReviews / totalRatedReviews) * 100)
         : 0;
     const dailyProgress = {};
+    const heatmap = document.querySelector("#stats-heatmap");
+
+if (heatmap) {
+    heatmap.replaceChildren();
+
+    const today = new Date();
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - 364);
+
+    const reviewCounts = {};
+
+    flashcards.forEach((card) => {
+        const dailyReviews = card.scheduling?.dailyReviews || {};
+
+        Object.entries(dailyReviews).forEach(([date, count]) => {
+            reviewCounts[date] = (reviewCounts[date] || 0) + count;
+        });
+    });
+
+    for (let i = 0; i < 365; i++) {
+        const date = new Date(startDate);
+        date.setDate(startDate.getDate() + i);
+
+        const dateString = [
+            date.getFullYear(),
+            String(date.getMonth() + 1).padStart(2, "0"),
+            String(date.getDate()).padStart(2, "0")
+        ].join("-");
+
+        const count = reviewCounts[dateString] || 0;
+        const day = document.createElement("div");
+
+        day.classList.add("stats-heatmap__day");
+
+        if (count >= 1 && count <= 2) {
+            day.classList.add("stats-heatmap__day--low");
+        } else if (count >= 3 && count <= 5) {
+            day.classList.add("stats-heatmap__day--medium");
+        } else if (count >= 6) {
+            day.classList.add("stats-heatmap__day--high");
+        }
+
+        day.title = `${dateString}: ${count} reviews`;
+        day.setAttribute("aria-hidden", "true");
+
+        heatmap.appendChild(day);
+    }
+}
 
 flashcards.forEach((card) => {
     const dailyReviews = card.scheduling?.dailyReviews || {};
