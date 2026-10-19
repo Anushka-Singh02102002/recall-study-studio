@@ -768,10 +768,11 @@ if (knowsAnswer) {
     } else {
         card.scheduling.box = 1;
     }
+const leitnerIntervals = [1, 2, 4, 8, 16];
 
-    const daysToWait = knowsAnswer
-        ? card.scheduling.box
-        : 1;
+const daysToWait = leitnerIntervals[
+    card.scheduling.box - 1
+];
 
     const nextReview = new Date();
     nextReview.setDate(
