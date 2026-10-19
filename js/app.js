@@ -763,6 +763,7 @@ if (reviewsChart) {
     if (dates.length === 0) {
         const message = document.createElement("p");
         message.textContent = "No review activity yet.";
+        message.setAttribute("role", "status");
         reviewsChart.appendChild(message);
     } else {
         const maxReviews = Math.max(
@@ -778,7 +779,7 @@ if (reviewsChart) {
             bar.style.height = `${Math.max((count / maxReviews) * 160, 4)}px`;
             bar.title = `${date}: ${count} reviews`;
             const dateLabel = document.createElement("span");
-dateLabel.textContent = date.slice(5);
+dateLabel.textContent = `${date.slice(5)} (${count})`;
 dateLabel.classList.add("stats-reviews-chart__date");
 
 const barGroup = document.createElement("div");
