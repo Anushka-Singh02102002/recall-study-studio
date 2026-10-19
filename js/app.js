@@ -777,6 +777,17 @@ if (reviewsChart) {
             bar.classList.add("stats-reviews-chart__bar");
             bar.style.height = `${Math.max((count / maxReviews) * 160, 4)}px`;
             bar.title = `${date}: ${count} reviews`;
+            const dateLabel = document.createElement("span");
+dateLabel.textContent = date.slice(5);
+dateLabel.classList.add("stats-reviews-chart__date");
+
+const barGroup = document.createElement("div");
+barGroup.classList.add("stats-reviews-chart__item");
+barGroup.append(bar, dateLabel);
+reviewsChart.appendChild(barGroup);
+
+            bar.setAttribute("role", "img");
+            bar.setAttribute("aria-label", `${date}: ${count} reviews`);
             bar.setAttribute("aria-hidden", "true");
 
             reviewsChart.appendChild(bar);
