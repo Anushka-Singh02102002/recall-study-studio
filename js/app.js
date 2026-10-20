@@ -606,6 +606,25 @@ const todayReviews = flashcards.reduce((total, card) => {
     return total + (card.scheduling?.dailyReviews?.[today] || 0);
 }, 0);
 
+const currentStreakDisplay = document.querySelector("#current-streak");
+
+if (currentStreakDisplay) {
+    currentStreakDisplay.textContent = currentStreak;
+}
+
+
+const dailyGoalInput = document.querySelector("#daily-goal");
+const goalStatusDisplay = document.querySelector("#goal-status");
+
+const dailyGoal = Number(dailyGoalInput?.value || 10);
+
+if (goalStatusDisplay) {
+    goalStatusDisplay.textContent =
+        todayReviews >= dailyGoal
+            ? "Completed"
+            : `${todayReviews}/${dailyGoal} cards`;
+}
+
 const todayProgress = document.querySelector("#stats-today-progress");
 
 if (todayProgress) {
@@ -1316,6 +1335,16 @@ retrySyncButton.addEventListener("click", runSync);
 
 cancelSyncButton.addEventListener("click", () => {
     syncController?.abort();
+});
+const dailyGoalSlider = document.querySelector("#daily-goal");
+const dailyGoalValue = document.querySelector("#daily-goal-value");
+
+dailyGoalSlider?.addEventListener("input", () => {
+    if (dailyGoalValue) {
+        dailyGoalValue.textContent = dailyGoalSlider.value;
+    }
+
+    updateStatsDashboard();
 });
 
 
