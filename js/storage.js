@@ -18,7 +18,6 @@ export function loadFlashcards() {
             }
         }
 
-        // Support the older array format.
         const legacyData = localStorage.getItem(LEGACY_KEY);
         const oldFlashcards = legacyData ? JSON.parse(legacyData) : [];
 
@@ -40,5 +39,11 @@ export function saveFlashcards(flashcards) {
         flashcards: flashcards
     };
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        return true;
+    } catch (error) {
+        console.error("Could not save flashcards:", error);
+        return false;
+    }
 }

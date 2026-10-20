@@ -668,8 +668,13 @@ function getTotalStudyCards() {
 
 let previousStudyState = null;
 function saveFlashcards() {
-    saveFlashcardsToStorage(flashcards);
+ const saved = saveFlashcardsToStorage(flashcards);
+
+    if (!saved) {
+        console.error("Flashcards could not be saved.");
+    }
 }
+   
     function updateStatsDashboard() {
     const totalFlashcards = flashcards.length;
     const today = new Date().toISOString().slice(0, 10);
