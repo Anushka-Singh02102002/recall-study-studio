@@ -1,44 +1,44 @@
 
 const STORAGE_KEY = "recall-data";
+const LEGACY_KEY = "recall-flashcards";
 const CURRENT_VERSION = 1;
 
-export function saveData(data) {
-  const versionedData = {
-    version: CURRENT_VERSION,
-    data: data
-  };
+export function loadFlashcards() {
+    try {
+        const savedData = localStorage.getItem(STORAGE_KEY);
 
-  try {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(versionedData)
-    );
+        if (savedData) {
+            const parsedData = JSON.parse(savedData);
 
-    return true;
-  } catch (error) {
-    console.error("Could not save Recall data:", error);
-    return false;
-  }
+            if (
+                parsedData.version === CURRENT_VERSION &&
+                Array.isArray(parsedData.flashcards)
+            ) {
+                return parsedData.flashcards;
+            }
+        }
+
+        // Support the older array format.
+        const legacyData = localStorage.getItem(LEGACY_KEY);
+        const oldFlashcards = legacyData ? JSON.parse(legacyData) : [];
+
+        if (!Array.isArray(oldFlashcards)) {
+            throw new Error("Saved flashcard data is invalid.");
+        }
+
+        saveFlashcards(oldFlashcards);
+        return oldFlashcards;
+    } catch (error) {
+        console.error("Could not load flashcards:", error);
+        return [];
+    }
 }
 
-export function loadData() {
-  try {
-    const savedValue = localStorage.getItem(STORAGE_KEY);
+export function saveFlashcards(flashcards) {
+    const data = {
+        version: CURRENT_VERSION,
+        flashcards: flashcards
+    };
 
-    if (savedValue === null) {
-      return null;
-    }
-
-    const parsedValue = JSON.parse(savedValue);
-
-    if (parsedValue.version !== CURRENT_VERSION) {
-      console.warn("Recall data version is different.");
-      return null;
-    }
-
-    return parsedValue.data;
-  } catch (error) {
-    console.error("Could not load Recall data:", error);
-    return null;
-  }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }

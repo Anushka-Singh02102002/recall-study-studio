@@ -3,12 +3,11 @@ import { decks } from "./store.js";
 import { getCurrentRoute } from "./router.js";
 import { starterFlashcards } from "./data.js";
 import { syncWithServer } from "./mockServer.js";
+import { loadFlashcards, saveFlashcards as saveFlashcardsToStorage } from "./storage.js";
 
 
 console.log(getCurrentRoute());
-const savedCards = JSON.parse(
-    localStorage.getItem("recall-flashcards") || "[]"
-);
+const savedCards = loadFlashcards();
 
 starterFlashcards.forEach((starterCard) => {
     const alreadyExists = savedCards.some(
@@ -33,25 +32,19 @@ starterFlashcards.forEach((starterCard) => {
     }
 });
 
-localStorage.setItem(
-    "recall-flashcards",
-    JSON.stringify(savedCards)
-);
+saveFlashcardsToStorage(savedCards);
 
-const flashcards = JSON.parse(
-    localStorage.getItem("recall-flashcards") || "[]"
-);
-
-flashcards.forEach((card) => {
+savedCards.forEach((card) => {
     if (!card.deckId) {
         card.deckId = "javascript";
     }
 });
 
-localStorage.setItem(
-    "recall-flashcards",
-    JSON.stringify(flashcards)
-);
+saveFlashcardsToStorage(savedCards);
+
+const flashcards = savedCards;
+
+saveFlashcards();
 
 const pageTitle = document.querySelector("h1");
 console.log(pageTitle);
@@ -344,11 +337,7 @@ deleteButton.addEventListener("click", function () {
     }
 
     flashcards.splice(cardIndex, 1);
-
-    localStorage.setItem(
-        "recall-flashcards",
-        JSON.stringify(flashcards)
-    );
+    saveFlashcards();
 
     renderCurrentDeckCards();
     updateDueCount("javascript");
@@ -525,11 +514,7 @@ if (selectedFile) {
 
     flashcards.push(newCard);
 }
-
-    localStorage.setItem(
-        "recall-flashcards",
-        JSON.stringify(flashcards)
-    );
+     saveFlashcards();
 
     renderCurrentDeckCards();
 
@@ -683,10 +668,7 @@ function getTotalStudyCards() {
 
 let previousStudyState = null;
 function saveFlashcards() {
-    localStorage.setItem(
-        "recall-flashcards",
-        JSON.stringify(flashcards)
-    );
+    saveFlashcardsToStorage(flashcards);
 }
     function updateStatsDashboard() {
     const totalFlashcards = flashcards.length;
