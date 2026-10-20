@@ -421,8 +421,30 @@
 
     <p id="import-export-status" aria-live="polite"></p>
 
+
+</section>
+<section id="sync-section">
+    <h2>Sync Data</h2>
+    <p>Sync your flashcards with the simulated server.</p>
+
+    <button type="button" id="sync-button">
+        Sync Now
+    </button>
+
+    <button type="button" id="cancel-sync-button" disabled>
+        Cancel Sync
+    </button>
+
+    <p id="sync-status" role="status" aria-live="polite">
+        Ready to sync.
+    </p>
+
+    <button type="button" id="retry-sync-button" hidden>
+        Retry Sync
+    </button>
 </section>
 </section>
+
 <section id="stats">
     <h2>Your Study Statistics</h2>
     <p>Track learning progress and performance over time.</p>

@@ -2,6 +2,7 @@
 import { decks } from "./store.js";
 import { getCurrentRoute } from "./router.js";
 import { starterFlashcards } from "./data.js";
+import { syncWithServer } from "./mockServer.js";
 
 
 console.log(getCurrentRoute());
@@ -1266,6 +1267,55 @@ document.querySelector("#import-form")?.addEventListener("submit", async (event)
     } catch (error) {
         status.textContent = `Import failed: ${error.message}`;
     }
+});
+let syncController = null;
+
+const syncButton = document.querySelector("#sync-button");
+const cancelSyncButton = document.querySelector("#cancel-sync-button");
+const retrySyncButton = document.querySelector("#retry-sync-button");
+const syncStatus = document.querySelector("#sync-status");
+
+async function runSync() {
+    if (syncController) return;
+
+    syncController = new AbortController();
+    const currentController = syncController;
+
+    syncButton.disabled = true;
+    cancelSyncButton.disabled = false;
+    retrySyncButton.hidden = true;
+    syncStatus.textContent = "Syncing... Please wait.";
+
+    try {
+        const result = await syncWithServer(flashcards, {
+            signal: currentController.signal
+        });
+
+        syncStatus.textContent =
+            `${result.message} ${result.syncedCount} flashcards synced.`;
+
+    } catch (error) {
+        if (error.name === "AbortError") {
+            syncStatus.textContent = "Sync cancelled.";
+        } else {
+            syncStatus.textContent = `Sync failed: ${error.message}`;
+            retrySyncButton.hidden = false;
+        }
+    } finally {
+        if (syncController === currentController) {
+            syncController = null;
+        }
+
+        syncButton.disabled = false;
+        cancelSyncButton.disabled = true;
+    }
+}
+
+syncButton.addEventListener("click", runSync);
+retrySyncButton.addEventListener("click", runSync);
+
+cancelSyncButton.addEventListener("click", () => {
+    syncController?.abort();
 });
 
 
