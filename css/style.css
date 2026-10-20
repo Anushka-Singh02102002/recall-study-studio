@@ -657,6 +657,9 @@ textarea:focus-visible {
     outline: 3px solid #287443;
     outline-offset: 4px;
 }
+#not-found[hidden] {
+    display: none !important;
+}
 .deck-detail {
     padding: 28px;
     margin: 24px 0;

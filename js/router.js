@@ -47,6 +47,7 @@ if (currentRoute.startsWith("#/deck/")) {
 
 const sectionId = routeMap[routeToShow] || "not-found";
 const activeSection = document.getElementById(sectionId);
+console.log("Active section:", activeSection?.id);
 console.log(
     "Import/Export section:",
     document.getElementById("import-export")
@@ -65,10 +66,6 @@ if (currentRoute.startsWith("#/deck/")) {
     document.getElementById("deck-detail").hidden = false;
 }
 
-if (currentRoute.startsWith("#/study/")) {
-    document.getElementById("deck-detail").hidden = false;
-    document.getElementById("study-session").hidden = false;
-}
 }
 window.addEventListener("hashchange", function () {
     renderRoute();
