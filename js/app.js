@@ -1,9 +1,9 @@
 
-import { decks } from "./store.js";
 import { getCurrentRoute } from "./router.js";
 import { starterFlashcards } from "./data.js";
 import { syncWithServer } from "./mockServer.js";
 import { loadFlashcards, saveFlashcards as saveFlashcardsToStorage } from "./storage.js";
+import { decks, saveDecks, loadDecks } from "./store.js";
 
 
 console.log(getCurrentRoute());
@@ -85,6 +85,7 @@ createDeckForm?.addEventListener("submit", (event) => {
     };
 
     decks.push(newDeck);
+    saveDecks();
 
     const article = document.createElement("article");
 
@@ -132,6 +133,7 @@ dueCount.textContent = "Due for review: 0";
     }
 
     newDeck.name = trimmedName;
+    saveDecks();
     heading.textContent = trimmedName;
 
     newDeck.id = trimmedName.toLowerCase().replace(/\s+/g, "-");
@@ -160,7 +162,8 @@ dueCount.textContent = "Due for review: 0";
     if (deckIndex !== -1) {
         decks.splice(deckIndex, 1);
     }
-
+    saveDecks();
+          
     deckSearchInput.dispatchEvent(new Event("input"));
 });
 
