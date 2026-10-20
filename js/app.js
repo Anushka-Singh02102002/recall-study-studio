@@ -3,6 +3,7 @@ import { decks } from "./store.js";
 import { getCurrentRoute } from "./router.js";
 import { starterFlashcards } from "./data.js";
 
+
 console.log(getCurrentRoute());
 const savedCards = JSON.parse(
     localStorage.getItem("recall-flashcards") || "[]"
@@ -794,8 +795,7 @@ reviewsChart.appendChild(barGroup);
             bar.setAttribute("role", "img");
             bar.setAttribute("aria-label", `${date}: ${count} reviews`);
             
-
-            reviewsChart.appendChild(bar);
+                  reviewsChart.appendChild(bar);
         });
     }
 }
@@ -1094,6 +1094,179 @@ function startStudyTimer() {
     }, 1000);
 }
 updateStatsDashboard();
+
+function downloadFile(content, filename, type) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.click();
+
+    URL.revokeObjectURL(url);
+}
+
+document.querySelector("#export-json")?.addEventListener("click", () => {
+    downloadFile(
+        JSON.stringify(flashcards, null, 2),
+        "recall-flashcards.json",
+        "application/json"
+    );
+});
+
+function escapeCSV(value) {
+    const text = String(value ?? "");
+    return `"${text.replace(/"/g, '""')}"`;
+}
+
+document.querySelector("#export-csv")?.addEventListener("click", () => {
+    const columns = ["front", "back", "deckId"];
+
+    const rows = [
+        columns.join(","),
+        ...flashcards.map(card =>
+            columns.map(column => escapeCSV(card[column])).join(",")
+        )
+    ];
+
+    downloadFile(
+        rows.join("\r\n"),
+        "recall-flashcards.csv",
+        "text/csv;charset=utf-8;"
+    );
+});
+
+function parseCSV(text) {
+    const rows = [];
+    let row = [];
+    let field = "";
+    let insideQuotes = false;
+
+    for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+
+        if (char === '"' && insideQuotes && text[i + 1] === '"') {
+            field += '"';
+            i++;
+        } else if (char === '"') {
+            insideQuotes = !insideQuotes;
+        } else if (char === "," && !insideQuotes) {
+            row.push(field);
+            field = "";
+        } else if ((char === "\n" || char === "\r") && !insideQuotes) {
+            if (char === "\r" && text[i + 1] === "\n") i++;
+
+            row.push(field);
+            rows.push(row);
+            row = [];
+            field = "";
+        } else {
+            field += char;
+        }
+    }
+
+    if (insideQuotes) {
+        throw new Error("CSV contains an unclosed quoted field.");
+    }
+
+    if (field.length > 0 || row.length > 0) {
+        row.push(field);
+        rows.push(row);
+    }
+
+    if (rows.length === 0) return [];
+
+    const headers = rows.shift().map(header => header.trim());
+
+    return rows
+        .filter(values => values.some(value => value.trim() !== ""))
+        .map(values =>
+            Object.fromEntries(
+                headers.map((header, index) => [
+                    header,
+                    values[index] ?? ""
+                ])
+            )
+        );
+}
+document.querySelector("#import-form")?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const fileInput = document.querySelector("#import-file");
+    const status = document.querySelector("#import-export-status");
+    const file = fileInput.files[0];
+
+    if (!file) {
+        status.textContent = "Please select a file.";
+        return;
+    }
+
+    try {
+        const text = await file.text();
+        let importedCards;
+
+        if (file.name.toLowerCase().endsWith(".json")) {
+            const parsed = JSON.parse(text);
+
+            // Supports both a plain array and versioned JSON.
+            importedCards = Array.isArray(parsed) ? parsed : parsed.data;
+        } else if (file.name.toLowerCase().endsWith(".csv")) {
+            importedCards = parseCSV(text);
+
+            if (importedCards.length > 0) {
+                importedCards = importedCards.map((card) => ({
+                    ...card,
+                    scheduling: {
+                        box: 1,
+                        nextReview: null,
+                        reviews: 0
+                    },
+                    reviews: 0,
+                    correctReviews: 0,
+                    incorrectReviews: 0
+                }));
+            }
+        } else {
+            throw new Error("Choose a JSON or CSV file.");
+        }
+
+        if (!Array.isArray(importedCards)) {
+            throw new Error("Invalid file format.");
+        }
+
+        const validCards = importedCards.filter(
+            card =>
+                card &&
+                typeof card.front === "string" &&
+                typeof card.back === "string" &&
+                card.front.trim() &&
+                card.back.trim()
+        );
+
+        if (validCards.length === 0) {
+            throw new Error("No valid flashcards found in the file.");
+        }
+
+        const existingIds = new Set(flashcards.map(card => card.id));
+
+        const newCards = validCards.map(card => ({
+            ...card,
+            id: existingIds.has(card.id) || !card.id
+                ? crypto.randomUUID()
+                : card.id,
+            deckId: card.deckId || "javascript"
+        }));
+
+        flashcards.push(...newCards);
+        saveFlashcards();
+
+        status.textContent = `Imported ${newCards.length} flashcards successfully.`;
+        fileInput.value = "";
+    } catch (error) {
+        status.textContent = `Import failed: ${error.message}`;
+    }
+});
 
 
 

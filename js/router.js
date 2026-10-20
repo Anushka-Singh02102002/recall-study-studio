@@ -2,7 +2,7 @@ export function getCurrentRoute() {
     return window.location.hash || "#/decks";
 }
 const pageSections = document.querySelectorAll(
-    "#main-content section[id]"
+    "#main-content > section[id]"
 );
 function renderRoute() {
     const currentRoute = getCurrentRoute();
@@ -47,6 +47,15 @@ if (currentRoute.startsWith("#/deck/")) {
 
 const sectionId = routeMap[routeToShow] || "not-found";
 const activeSection = document.getElementById(sectionId);
+console.log(
+    "Import/Export section:",
+    document.getElementById("import-export")
+);
+
+console.log(
+    "Settings section:",
+    document.getElementById("settings")
+);
 console.log("Route:", currentRoute, "Section:", sectionId, "Found:", activeSection);
 
 if (activeSection) {
