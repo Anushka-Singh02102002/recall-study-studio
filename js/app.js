@@ -62,8 +62,158 @@ console.log(mainContent);
 const navigation = document.querySelector("nav");
 console.log(navigation);
 const deckList = document.querySelector(".deck-list");
+console.log("Available decks:", decks);
+const createDeckForm = document.querySelector("#create-deck-form");
+createDeckForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const deckNameInput = document.querySelector("#deck-name");
+    const deckDescriptionInput = document.querySelector("#deck-description");
+
+    const deckName = deckNameInput.value.trim();
+    const deckDescription = deckDescriptionInput.value.trim();
+
+    if (!deckName) {
+        deckNameInput.focus();
+        return;
+    }
+
+    const deckId = deckName.toLowerCase().replace(/\s+/g, "-");
+
+    if (decks.some((deck) => deck.id === deckId)) {
+        alert("A deck with this name already exists.");
+        return;
+    }
+
+    const newDeck = {
+        id: deckId,
+        name: deckName,
+        description: deckDescription || "No description added yet."
+    };
+
+    decks.push(newDeck);
+
+    const article = document.createElement("article");
+
+    const heading = document.createElement("h3");
+    heading.textContent = newDeck.name;
+
+    const description = document.createElement("p");
+    description.textContent = newDeck.description;
+
+    const flashcardsCount = document.createElement("p");
+flashcardsCount.id = `count-${newDeck.id}`;
+flashcardsCount.textContent = "Flashcards: 0";
+
+const dueCount = document.createElement("p");
+dueCount.id = `due-${newDeck.id}`;
+dueCount.textContent = "Due for review: 0";
+
+    const openLink = document.createElement("a");
+    openLink.href = `#/deck/${newDeck.id}`;
+    openLink.textContent = "Open Deck";
+    const editButton = document.createElement("button");
+    editButton.type = "button";
+    editButton.textContent = "Edit Deck";
+    editButton.addEventListener("click", () => {
+    const updatedName = prompt("Enter the new deck name:", newDeck.name);
+
+    if (updatedName === null) return;
+
+    const trimmedName = updatedName.trim();
+
+    if (trimmedName.length < 2) {
+        alert("Deck name must be at least 2 characters.");
+        return;
+    }
+
+    const duplicateDeck = decks.some(
+        (deck) =>
+            deck.id !== newDeck.id &&
+            deck.name.toLowerCase() === trimmedName.toLowerCase()
+    );
+
+    if (duplicateDeck) {
+        alert("A deck with this name already exists.");
+        return;
+    }
+
+    newDeck.name = trimmedName;
+    heading.textContent = trimmedName;
+
+    newDeck.id = trimmedName.toLowerCase().replace(/\s+/g, "-");
+    openLink.href = `#/deck/${newDeck.id}`;
+
+    deckSearchInput.dispatchEvent(new Event("input"));
+    deckSortInput.dispatchEvent(new Event("change"));
+});
+
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.textContent = "Delete Deck";
+    deleteButton.addEventListener("click", () => {
+    const confirmDelete = confirm(
+        `Are you sure you want to delete "${newDeck.name}"?`
+    );
+
+    if (!confirmDelete) return;
+
+    article.remove();
+
+    const deckIndex = decks.findIndex(
+        (deck) => deck.id === newDeck.id
+    );
+
+    if (deckIndex !== -1) {
+        decks.splice(deckIndex, 1);
+    }
+
+    deckSearchInput.dispatchEvent(new Event("input"));
+});
+
+    article.append(
+        heading,
+        description,
+        flashcardsCount,
+        dueCount,
+        openLink,
+        editButton,
+        deleteButton
+    );
+
+    deckList.append(article);
+
+    createDeckForm.reset();
+
+    deckSearchInput.dispatchEvent(new Event("input"));
+    deckSortInput.dispatchEvent(new Event("change"));
+});
 const deckSortInput = document.querySelector("#deck-sort");
 const deckSearchInput = document.querySelector("#deck-search");
+deckSearchInput?.addEventListener("input", () => {
+    const searchText = deckSearchInput.value.toLowerCase().trim();
+    const deckCards = deckList.querySelectorAll("article");
+    let visibleDecks = 0;
+
+    deckCards.forEach((card) => {
+        const deckName = card.querySelector("h3")?.textContent
+            .toLowerCase() || "";
+
+        const matches = deckName.includes(searchText);
+
+        card.hidden = !matches;
+
+        if (matches) {
+            visibleDecks++;
+        }
+    });
+
+    const noDecksMessage = document.querySelector("#no-decks-message");
+
+    if (noDecksMessage) {
+        noDecksMessage.hidden = visibleDecks > 0;
+    }
+});
 deckSortInput.addEventListener("change", function () {
     const deckCards = Array.from(deckList.querySelectorAll("article"));
 
@@ -167,7 +317,7 @@ function displayFlashcard(card) {
      
     const deleteButton = document.createElement("button");
 deleteButton.type = "button";
-deleteButton.textContent = "Delete";
+deleteButton.textContent = "Delete Deck";
 deleteButton.className = "flashcard-delete";
 const editButton = document.createElement("button");
 editButton.type = "button";
@@ -522,10 +672,13 @@ const sessionProgress = document.querySelector("#session-progress");
 const sessionProgressText = document.querySelector("#session-progress-text");
 
 let reviewedCards = 0;
-const totalStudyCards = flashcards.filter(
-    (card) =>
-        card.deckId === getCurrentRoute().split("/")[2]
-).length;
+function getTotalStudyCards() {
+    const currentDeckId = getCurrentRoute().split("/")[2];
+
+    return flashcards.filter(
+        (card) => card.deckId === currentDeckId
+    ).length;
+}
 
 
 let previousStudyState = null;
@@ -811,15 +964,15 @@ const barGroup = document.createElement("div");
 barGroup.classList.add("stats-reviews-chart__item");
 barGroup.append(bar, dateLabel);
 reviewsChart.appendChild(barGroup);
-
-            bar.setAttribute("role", "img");
-            bar.setAttribute("aria-label", `${date}: ${count} reviews`);
-            
-                  reviewsChart.appendChild(bar);
+bar.setAttribute("role", "img");
+bar.setAttribute("aria-label", `${date}: ${count} reviews`);
         });
     }
 }
+
 const accuracyChart = document.querySelector("#stats-accuracy-chart");
+
+           
 
 if (accuracyChart) {
     accuracyChart.replaceChildren();
@@ -1022,12 +1175,15 @@ function updateStudyProgress() {
     reviewedCards++;
 
     sessionProgress.value = reviewedCards;
-    sessionProgressText.textContent =
-        `${reviewedCards} out of ${totalStudyCards} cards reviewed`;
+   const totalStudyCards = getTotalStudyCards();
+sessionProgress.max = totalStudyCards;
+
+sessionProgressText.textContent =
+    `${reviewedCards} out of ${totalStudyCards} cards reviewed`;
 
     undoActionButton.disabled = false;
 
-    if (reviewedCards >= totalStudyCards) {
+   if (reviewedCards >= getTotalStudyCards()) {
         knowAnswerButton.disabled = true;
         reviewAnswerButton.disabled = true;
         sessionProgressText.textContent = "Study session completed!";
@@ -1280,6 +1436,8 @@ document.querySelector("#import-form")?.addEventListener("submit", async (event)
 
         flashcards.push(...newCards);
         saveFlashcards();
+        renderCurrentDeckCards();
+        updateStatsDashboard();
 
         status.textContent = `Imported ${newCards.length} flashcards successfully.`;
         fileInput.value = "";
@@ -1346,10 +1504,3 @@ dailyGoalSlider?.addEventListener("input", () => {
 
     updateStatsDashboard();
 });
-
-
-
-
-
-
-
