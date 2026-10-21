@@ -1841,6 +1841,7 @@ header button:hover {
     padding: 9px 16px;
     font-weight: 600;
     cursor: pointer;
+    margin-left: 10px;
 }
 
 #flashcard-list .flashcard-item button.flashcard-edit:hover {

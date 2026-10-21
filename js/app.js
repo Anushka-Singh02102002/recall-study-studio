@@ -4,6 +4,7 @@ import { starterFlashcards } from "./data.js";
 import { syncWithServer } from "./mockServer.js";
 import { loadFlashcards, saveFlashcards as saveFlashcardsToStorage } from "./storage.js";
 import { decks, saveDecks, loadDecks } from "./store.js";
+import { getNextReviewDate } from "./scheduler.js";
 
 
 console.log(getCurrentRoute());
@@ -55,6 +56,137 @@ console.log(mainContent);
 const navigation = document.querySelector("nav");
 console.log(navigation);
 const deckList = document.querySelector(".deck-list");
+
+const defaultEditButtons = document.querySelectorAll(".edit-deck");
+const defaultDeleteButtons = document.querySelectorAll(".delete-deck");
+
+defaultEditButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+        const article = button.closest("article");
+        const heading = article.querySelector("h3");
+        const oldName = heading.textContent;
+
+        const updatedName = prompt("Enter the new deck name:", oldName);
+
+        if (updatedName === null) {
+            return;
+        }
+
+        const trimmedName = updatedName.trim();
+
+        if (trimmedName.length < 2) {
+            alert("Deck name must contain at least 2 characters.");
+            return;
+        }
+
+        const deck = decks.find(
+            (item) => item.name.toLowerCase() === oldName.toLowerCase()
+        );
+
+        if (!deck) {
+            alert("Deck not found.");
+            return;
+        }
+
+        const duplicateDeck = decks.some(
+            (item) =>
+                item.id !== deck.id &&
+                item.name.toLowerCase() === trimmedName.toLowerCase()
+        );
+
+        if (duplicateDeck) {
+            alert("A deck with this name already exists.");
+            return;
+        }
+
+        const oldId = deck.id;
+        const newId = trimmedName.toLowerCase().replace(/\s+/g, "-");
+
+        deck.name = trimmedName;
+        deck.id = newId;
+
+        const description = article.querySelector("p");
+        const openLink = article.querySelector("a");
+
+        heading.textContent = trimmedName;
+        openLink.href = `#/deck/${newId}`;
+
+        article.querySelectorAll("span").forEach((span) => {
+            if (span.id === `count-${oldId}`) {
+                span.id = `count-${newId}`;
+            }
+
+            if (span.id === `due-${oldId}`) {
+                span.id = `due-${newId}`;
+            }
+        });
+
+        flashcards.forEach((card) => {
+            if (card.deckId === oldId) {
+                card.deckId = newId;
+            }
+        });
+
+        saveDecks();
+        saveFlashcards();
+
+        deckSearchInput.dispatchEvent(new Event("input"));
+        deckSortInput.dispatchEvent(new Event("change"));
+    });
+});
+
+defaultDeleteButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+        const article = button.closest("article");
+        const heading = article.querySelector("h3");
+        const deckName = heading.textContent;
+
+        const deck = decks.find(
+            (item) => item.name.toLowerCase() === deckName.toLowerCase()
+        );
+
+        if (!deck) {
+            alert("Deck not found.");
+            return;
+        }
+
+        const confirmDelete = confirm(
+            `Are you sure you want to delete "${deckName}"?`
+        );
+
+        if (!confirmDelete) {
+            return;
+        }
+
+        const deckId = deck.id;
+
+        
+        const deckIndex = decks.findIndex(
+            (item) => item.id === deckId
+        );
+
+        if (deckIndex !== -1) {
+            decks.splice(deckIndex, 1);
+        }
+
+        
+        for (let i = flashcards.length - 1; i >= 0; i--) {
+            if (flashcards[i].deckId === deckId) {
+                flashcards.splice(i, 1);
+            }
+        }
+
+        saveDecks();
+        saveFlashcards();
+
+        article.remove();
+
+        deckSearchInput.dispatchEvent(new Event("input"));
+    });
+});
+
+
+
 console.log("Available decks:", decks);
 const createDeckForm = document.querySelector("#create-deck-form");
 createDeckForm?.addEventListener("submit", (event) => {
@@ -320,6 +452,7 @@ editButton.type = "button";
 editButton.textContent = "Edit";
 editButton.className = "flashcard-edit";
 editButton.addEventListener("click", function () {
+    
     editingCardId = card.id;
 
     frontInput.value = card.front;
@@ -640,10 +773,14 @@ startStudyButton.addEventListener("click", function () {
     knowAnswerButton.disabled = false;
     reviewAnswerButton.disabled = false;
 
-    sessionProgress.value = 0;
-    sessionProgressText.textContent =
-        `0 out of ${totalStudyCards} cards reviewed`;
+    const totalStudyCards = getTotalStudyCards();
 
+sessionProgress.max = totalStudyCards;
+sessionProgress.value = 0;
+
+sessionProgressText.textContent =
+    `0 out of ${totalStudyCards} cards reviewed`;
+   
     studyTimer.textContent = "00:00";
 
     loadStudyCard();
@@ -745,9 +882,19 @@ if (currentStreak === 0) {
 document.querySelector("#stats-current-streak").textContent =
     `${currentStreak} ${currentStreak === 1 ? "day" : "days"}`;
 
-const todayReviews = flashcards.reduce((total, card) => {
-    return total + (card.scheduling?.dailyReviews?.[today] || 0);
-}, 0);
+
+const todayReviews = flashcards.filter((card) => {
+    return (card.scheduling?.dailyReviews?.[today] || 0) > 0;
+}).length;
+
+console.log("Today's date key:", today);
+
+console.log(
+    "Today's review counts:",
+    flashcards
+        .map(card => card.scheduling?.dailyReviews?.[today] || 0)
+        .filter(count => count > 0)
+);
 
 const currentStreakDisplay = document.querySelector("#current-streak");
 
@@ -758,25 +905,25 @@ if (currentStreakDisplay) {
 
 const dailyGoalInput = document.querySelector("#daily-goal");
 const goalStatusDisplay = document.querySelector("#goal-status");
-
 const dailyGoal = Number(dailyGoalInput?.value || 10);
 
-if (goalStatusDisplay) {
-    goalStatusDisplay.textContent =
-        todayReviews >= dailyGoal
-            ? "Completed"
-            : `${todayReviews}/${dailyGoal} cards`;
+const studyProgress = document.querySelector("#study-progress");
+const studyProgressText = document.querySelector("#study-progress-text");
+
+const todayProgress = Math.min(todayReviews, dailyGoal);
+console.log("Today's reviews:", todayReviews);
+
+
+if (studyProgress) {
+    studyProgress.max = dailyGoal;
+    studyProgress.value = todayProgress;
 }
 
-const todayProgress = document.querySelector("#stats-today-progress");
-
-if (todayProgress) {
-    todayProgress.textContent = `${todayReviews} cards reviewed today`;
-    todayProgress.setAttribute(
-        "aria-label",
-        `Today's study progress: ${todayReviews} cards reviewed`
-    );
+if (studyProgressText) {
+    studyProgressText.textContent =
+        `${todayProgress} out of ${dailyGoal} cards reviewed`;
 }
+
 
     const totalReviews = flashcards.reduce((total, card) => {
         return total + (card.scheduling?.reviews || 0);
@@ -1020,7 +1167,7 @@ line.setAttribute(
 );
 
 line.setAttribute("fill", "none");
-line.setAttribute("stroke", "#269b63");
+line.setAttribute("stroke", "#2a269b");
 line.setAttribute("stroke-width", "3");
 line.setAttribute("stroke-linecap", "round");
 line.setAttribute("stroke-linejoin", "round");
@@ -1034,7 +1181,7 @@ if (points.length === 1) {
     singlePointLine.setAttribute("y1", point.y);
     singlePointLine.setAttribute("x2", width - padding);
     singlePointLine.setAttribute("y2", point.y);
-    singlePointLine.setAttribute("stroke", "#269b63");
+    singlePointLine.setAttribute("stroke", "#26399b");
     singlePointLine.setAttribute("stroke-width", "3");
     singlePointLine.setAttribute("stroke-linecap", "round");
 
@@ -1484,13 +1631,130 @@ retrySyncButton.addEventListener("click", runSync);
 cancelSyncButton.addEventListener("click", () => {
     syncController?.abort();
 });
+
 const dailyGoalSlider = document.querySelector("#daily-goal");
 const dailyGoalValue = document.querySelector("#daily-goal-value");
 
-dailyGoalSlider?.addEventListener("input", () => {
+if (dailyGoalSlider) {
+    const savedDailyGoal = localStorage.getItem("daily-goal");
+
+    if (savedDailyGoal) {
+        dailyGoalSlider.value = savedDailyGoal;
+    }
+
     if (dailyGoalValue) {
         dailyGoalValue.textContent = dailyGoalSlider.value;
     }
 
-    updateStatsDashboard();
+    dailyGoalSlider.addEventListener("input", () => {
+        const selectedGoal = dailyGoalSlider.value;
+
+        if (dailyGoalValue) {
+            dailyGoalValue.textContent = selectedGoal;
+        }
+
+        localStorage.setItem("daily-goal", selectedGoal);
+        updateStatsDashboard();
+    });
+}
+
+
+const helpButton = document.querySelector("#open-help");
+const helpDialog = document.querySelector("#help-dialog");
+
+helpButton.addEventListener("click", function () {
+    helpDialog.showModal();
 });
+
+const accentColorInput = document.querySelector("#accent-color");
+
+if (accentColorInput) {
+    const savedAccentColor = localStorage.getItem("accent-color");
+
+    if (savedAccentColor) {
+        accentColorInput.value = savedAccentColor;
+
+        document.documentElement.style.setProperty(
+            "--primary-color",
+            savedAccentColor
+        );
+    }
+
+    accentColorInput.addEventListener("input", function () {
+        const selectedColor = accentColorInput.value;
+
+        document.documentElement.style.setProperty(
+            "--primary-color",
+            selectedColor
+        );
+
+        localStorage.setItem("accent-color", selectedColor);
+    });
+}
+
+
+const studyReminderInput = document.querySelector("#study-reminder");
+
+if (studyReminderInput) {
+    console.log("Reminder input found:", studyReminderInput);
+    const savedReminderTime = localStorage.getItem("study-reminder");
+
+    if (savedReminderTime !== null) {
+        studyReminderInput.value = savedReminderTime;
+    }
+
+    studyReminderInput.addEventListener("input", function () {
+        localStorage.setItem(
+            "study-reminder",
+            studyReminderInput.value
+        );
+    });
+}
+
+window.runCardRenderBenchmark = function () {
+    const testCards = Array.from({ length: 5000 }, (_, index) => ({
+        id: `performance-test-${index + 1}`,
+        deckId: currentDeckId,
+        front: `Test Question ${index + 1}`,
+        back: `Test Answer ${index + 1}`,
+        tags: [],
+        status: "new"
+    }));
+
+    const originalLength = flashcards.length;
+    const oldSearch = searchInput.value;
+    const oldTag = tagFilterInput.value;
+    const oldStatus = statusFilterInput.value;
+
+    flashcards.push(...testCards);
+
+    searchInput.value = "";
+    tagFilterInput.value = "";
+    statusFilterInput.value = "all";
+
+    const startTime = performance.now();
+
+    renderCurrentDeckCards();
+
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            const endTime = performance.now();
+            const elapsedTime = endTime - startTime;
+
+            console.log(
+                `AFTER: 5000 test cards rendered in ${elapsedTime.toFixed(2)} ms`
+            );
+
+            
+            flashcards.splice(originalLength);
+
+
+            searchInput.value = oldSearch;
+            tagFilterInput.value = oldTag;
+            statusFilterInput.value = oldStatus;
+
+            
+            renderCurrentDeckCards();
+        });
+    });
+};

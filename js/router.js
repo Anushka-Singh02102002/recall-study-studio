@@ -26,9 +26,13 @@ if (currentRoute.startsWith("#/deck/") && !isValidDeck) {
     window.location.hash = "#/404";
 }
 
-    pageSections.forEach(function (section) {
-        section.hidden = true;
-    });
+    
+pageSections.forEach(function (section) {
+    section.hidden = true;
+    section.style.display = "";
+});
+
+
     const routeMap = {
     "#/decks": "decks",
     "#/stats": "stats",
@@ -47,6 +51,10 @@ if (currentRoute.startsWith("#/deck/")) {
 
 const sectionId = routeMap[routeToShow] || "not-found";
 const activeSection = document.getElementById(sectionId);
+
+if (activeSection) {
+    activeSection.hidden = false;
+}
 console.log("Active section:", activeSection?.id);
 console.log(
     "Import/Export section:",
@@ -61,7 +69,12 @@ console.log("Route:", currentRoute, "Section:", sectionId, "Found:", activeSecti
 
 if (activeSection) {
     activeSection.hidden = false;
+
+    if (sectionId === "study-session") {
+        activeSection.style.display = "block";
+    }
 }
+
 if (currentRoute.startsWith("#/deck/")) {
     document.getElementById("deck-detail").hidden = false;
 }

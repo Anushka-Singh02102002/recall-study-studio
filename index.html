@@ -393,16 +393,21 @@
     <p>Current streak: <output id="current-streak">0</output> days</p>
     <p>Daily goal: <output id="goal-status">Not completed</output></p>
 </div>
+
 <div>
     <label for="study-progress">Today's Study Progress:</label>
-    <progress 
-     id="study-progress"
-     value="3" 
-     max="10">
-    </progress>
-    <p>3 out of 10 cards reviewed</p>
 
+    <progress
+        id="study-progress"
+        value="0"
+        max="10"
+    ></progress>
+
+    <p id="study-progress-text" aria-live="polite">
+        0 out of 10 cards reviewed
+    </p>
 </div>
+
 <section id="import-export">
     <h2>Import &amp; Export</h2>
 
@@ -570,8 +575,6 @@
     <p class="study-tip__message">
         Review your flashcards regularly to remember concepts for longer.
     </p>
-
-    <div class="study-tip__footer">
         <span aria-hidden="true">⌨</span>
         <p>Quick tip: Press <kbd>Ctrl</kbd> + <kbd>F</kbd> to find text on the page.</p>
     </div>
