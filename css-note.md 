@@ -1,0 +1,64 @@
+# CSS Notes — Recall: My Study Decks
+
+## 1. Overview
+
+I used CSS to make Recall look clean, simple, and comfortable to use. Since it is a study app, I wanted the layout to be easy to understand and the flashcards to be the main focus.
+
+The design uses a blue theme with light backgrounds, rounded corners, and consistent spacing.
+
+## 2. CSS Structure
+
+The main stylesheet is located at `css/style.css`.
+
+I organised the CSS into sections so that styles are easier to find and update. These sections cover:
+
+- Base styles and typography
+- Theme colours and CSS variables
+- Header and navigation
+- Deck cards and flashcards
+- Forms and buttons
+- Study progress and statistics
+- Responsive layouts
+- Accessibility and reduced-motion preferences
+
+## 3. Colours and Design Choices
+
+I used CSS custom properties for common colours and other design values. This makes it easier to keep the design consistent and update the theme without changing every selector.
+
+The blue theme is used for important buttons and interactive elements. Light backgrounds help keep text readable, while spacing and rounded corners make the cards easier to distinguish.
+
+## 4. Layout and Responsiveness
+
+I used Flexbox and CSS Grid where appropriate to arrange the content.
+
+The layout is designed to adapt to different screen sizes. On smaller screens, content can stack vertically so that deck cards, forms, and navigation remain easier to use.
+
+I also used flexible sizing where suitable to avoid relying on fixed widths for the entire page.
+
+## 5. Flashcard Design and Animation
+
+Flashcards are styled to make the question and answer easy to read during study sessions.
+
+Where card-flip animation is used, it helps create a more interactive study experience. Motion should not be necessary to understand the content, so reduced-motion preferences should also be considered.
+
+## 6. Accessibility
+
+I aimed to keep the interface readable and usable by:
+
+- Maintaining clear text and background contrast.
+- Keeping interactive elements visually identifiable.
+- Using visible focus styles for keyboard navigation.
+- Supporting smaller screens.
+- Respecting the user's reduced-motion preference where animations are used.
+
+## 7. Maintainability
+
+I kept related styles together and used reusable classes and CSS variables wherever possible. This makes future changes easier and helps avoid repeating the same styles unnecessarily.
+
+When updating the theme, I check for duplicate or outdated rules so that the stylesheet stays organised.
+
+## 8. Testing
+
+I checked the interface in the browser while building the project. I also tested the layout after making CSS changes to catch spacing, alignment, and styling issues.
+
+
