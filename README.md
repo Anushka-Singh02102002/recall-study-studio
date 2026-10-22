@@ -5,16 +5,13 @@ Spaced-Repetition Study Studio
 Recall is a study app I built to make revision easier. It uses flashcards and spaced repetition to help users practise topics regularly and remember what they learn. Users can organize their study material, review questions, and keep track of their progress in one place.
 
 ## 1. My Variant
+Variant 0 — Leitner System
 
-For this project, I built Recall — My Study Decks, a flashcard app where users can organize their subjects and revise them at their own pace.
+I chose Variant 0, which uses the Leitner System for spaced-repetition learning. In this system, flashcards are organised into boxes based on how well the user remembers them.
 
-The app comes with three default decks:
+When a user reviews a card, their answer determines whether the card moves to a higher box or returns to a lower box. Cards in different boxes are scheduled for review at different intervals. This helps users spend more time revising topics they find difficult.
 
-- JavaScript
-- Python
-- Algorithms
 
-Users can also create their own decks, add flashcards, practise questions, and check how much they have studied.
 
 ## 2. Features
 
