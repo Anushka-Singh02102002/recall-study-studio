@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recall - Unit Tests</title>
+</head>
+<body>
+    <h1>Recall Unit Tests</h1>
+    <p id="test-summary" aria-live="polite">Running tests...</p>
+    <ul id="test-results"></ul>
+
+    <script type="module">
+    import { getNextReviewDate } from "./scheduler.js";
+
+        const results = document.getElementById("test-results");
+        const summary = document.getElementById("test-summary");
+
+        let passed = 0;
+        let failed = 0;
+
+        function test(description, callback) {
+            const item = document.createElement("li");
+
+            try {
+                callback();
+                passed++;
+                item.textContent = `PASS: ${description}`;
+            } catch (error) {
+                failed++;
+                item.textContent = `FAIL: ${description} — ${error.message}`;
+            }
+
+            results.appendChild(item);
+        }
+
+        function assertEqual(actual, expected) {
+            if (actual !== expected) {
+                throw new Error(
+                    `Expected ${expected}, received ${actual}`
+                );
+            }
+        }
+
+    
+        const fixedDate = new Date("2026-01-15T12:00:00Z");
+
+        function checkReview(box, knowsAnswer) {
+            return getNextReviewDate(box, knowsAnswer, fixedDate);
+        }
+
+        
+        test("Correct answer moves box 1 to 2", () => {
+            assertEqual(checkReview(1, true).box, 2);
+        });
+
+       
+        test("Correct answer moves box 2 to 3", () => {
+            assertEqual(checkReview(2, true).box, 3);
+        });
+
+       
+        test("Correct answer moves box 3 to 4", () => {
+            assertEqual(checkReview(3, true).box, 4);
+        });
+
+       
+        test("Correct answer moves box 4 to 5", () => {
+            assertEqual(checkReview(4, true).box, 5);
+        });
+
+       
+        test("Box never exceeds 5", () => {
+            assertEqual(checkReview(5, true).box, 5);
+        });
+
+        
+        test("Wrong answer resets box 5 to 1", () => {
+            assertEqual(checkReview(5, false).box, 1);
+        });
+
+    
+        test("Wrong answer resets box 3 to 1", () => {
+            assertEqual(checkReview(3, false).box, 1);
+        });
+
+    
+        test("Wrong answer resets box 2 to 1", () => {
+            assertEqual(checkReview(2, false).box, 1);
+        });
+
+    
+        test("Box 1 schedules review after 2 days when correct", () => {
+            assertEqual(
+                checkReview(1, true).nextReview,
+                "2026-01-17"
+            );
+        });
+
+    
+        test("Box 2 schedules review after 4 days when correct", () => {
+            assertEqual(
+                checkReview(2, true).nextReview,
+                "2026-01-19"
+            );
+        });
+
+        
+        test("Box 3 schedules review after 8 days when correct", () => {
+            assertEqual(
+                checkReview(3, true).nextReview,
+                "2026-01-23"
+            );
+        });
+
+        
+        test("Box 4 schedules review after 16 days when correct", () => {
+            assertEqual(
+                checkReview(4, true).nextReview,
+                "2026-01-31"
+            );
+        });
+
+        
+        test("Review date rolls over into the next month", () => {
+            const result = getNextReviewDate(
+                1,
+                true,
+                new Date("2026-01-30T12:00:00Z")
+            );
+            assertEqual(result.nextReview, "2026-02-01");
+        });
+
+
+        test("Review date rolls over into the next year", () => {
+            const result = getNextReviewDate(
+                1,
+                false,
+                new Date("2026-12-31T12:00:00Z")
+            );
+            assertEqual(result.nextReview, "2027-01-01");
+        });
+
+    
+test("Review date handles February in a leap year", () => {
+    const result = getNextReviewDate(
+        1,
+        false,
+        new Date("2028-02-28T12:00:00Z")
+    );
+    assertEqual(result.nextReview, "2028-02-29");
+});
+
+        summary.textContent =
+            `${passed} passed, ${failed} failed`;
+
+        
+    </script>
+</body>
+</html>
