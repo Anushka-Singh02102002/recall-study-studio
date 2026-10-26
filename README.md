@@ -96,18 +96,10 @@ To stop the server, press Ctrl + C in the terminal.
 ## 5. Architecture Diagram
 
 The basic idea behind the app is simple: the user interacts with the page, JavaScript handles the action, and LocalStorage keeps the data saved.
-                  USER
-                   |
-                 HTML and CSS
-    |        |          |          |          |        |
-Deck        Flashcard   Study     Statistics   Import   Mock 
-management   management  scheduler  progress     export   sync
-     |               |     |        |           |         |
-                        LOCAL STORAGE
-                            |
-                    Saved study data
-                            |
-                            Updated interface
+This is my diagram
+
+(Myarchitecture.drawio.png)
+               
 
 
 ### How the App Works
